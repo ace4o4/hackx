@@ -1,0 +1,386 @@
+FOCUS TWIN — System Architecture
+==================================
+
+1. Architecture Philosophy
+--------------------------
+"Privacy-first intelligence. Stats on-device. Coaching from AI. Raw data never leaves."
+
+Focus Twin uses a HYBRID architecture:
+  - ALL user data (sessions, patterns, history) stays 100% on-device (IndexedDB)
+  - Pattern Engine computes stats locally (peak hours, streaks, trends)
+  - AI Agent Layer uses an LLM to turn raw stats into personalized, natural-language coaching
+  - Only computed stats (never raw data) are sent to the LLM for generating insights
+
+This is the key insight: the LLM doesn't need your raw data. It needs your PATTERNS.
+"User focuses best 2-4pm, streak dropped 3 days ago, mood ratings declining on Fridays"
+— that's enough for the LLM to generate genuinely useful, personalized coaching.
+
+
+2. System Layers
+----------------
+
+┌───────────────────────────────────────────────────────┐
+│                 PRESENTATION LAYER                     │
+│  React + TypeScript + Framer Motion                    │
+│  ┌──────────┐ ┌──────────┐ ┌────────────────────────┐ │
+│  │ EvoTwin  │ │ Focus    │ │ Insights               │ │
+│  │ Avatar   │ │ Session  │ │ Dashboard              │ │
+│  └──────────┘ └──────────┘ └────────────────────────┘ │
+├───────────────────────────────────────────────────────┤
+│                 AI AGENT LAYER (NEW)                    │
+│  ┌──────────────┐ ┌─────────────┐ ┌────────────────┐  │
+│  │ Twin Agent   │ │ Prompt      │ │ Conversation   │  │
+│  │ (Personality │ │ Builder     │ │ Memory         │  │
+│  │  + Coaching) │ │ (Stats→LLM) │ │ (Chat History) │  │
+│  └──────────────┘ └─────────────┘ └────────────────┘  │
+├───────────────────────────────────────────────────────┤
+│                 STATE & LOGIC LAYER                     │
+│  ┌──────────┐ ┌──────────┐ ┌────────────────────────┐ │
+│  │ Session  │ │ Pattern  │ │ Twin Evolution         │ │
+│  │ Manager  │ │ Engine   │ │ Engine                 │ │
+│  └──────────┘ └──────────┘ └────────────────────────┘ │
+├───────────────────────────────────────────────────────┤
+│                 ON-DEVICE DATA LAYER                    │
+│  ┌────────────────────────┐ ┌──────────────────────┐  │
+│  │ IndexedDB              │ │ localStorage         │  │
+│  │ (sessions, patterns,   │ │ (preferences, twin   │  │
+│  │  chat history,         │ │  state, settings)    │  │
+│  │  agent memory)         │ │                      │  │
+│  └────────────────────────┘ └──────────────────────┘  │
+├───────────────────────────────────────────────────────┤
+│                 LLM INFERENCE LAYER                     │
+│  ┌────────────────────────┐ ┌──────────────────────┐  │
+│  │ Option A: On-Device    │ │ Option B: Cloud API  │  │
+│  │ Chrome Prompt API      │ │ Gemini / GPT API     │  │
+│  │ (Gemini Nano) or       │ │ (only receives       │  │
+│  │ WebLLM (WebGPU)        │ │  computed stats,     │  │
+│  │ — zero network needed  │ │  never raw data)     │  │
+│  └────────────────────────┘ └──────────────────────┘  │
+├───────────────────────────────────────────────────────┤
+│                 OPTIONAL CLOUD LAYER                    │
+│  ┌────────────────────────┐ ┌──────────────────────┐  │
+│  │ Supabase Auth          │ │ Encrypted Sync       │  │
+│  │ (email/Google login)   │ │ (future: E2E backup) │  │
+│  └────────────────────────┘ └──────────────────────┘  │
+└───────────────────────────────────────────────────────┘
+
+
+3. AI Agent Layer — The Brain of the Twin
+-------------------------------------------
+
+The AI Agent is what makes the twin ALIVE. Without it, we just have a timer with charts. With it, the twin becomes a coach that speaks, advises, and adapts.
+
+3.1 How the Agent Works:
+
+┌──────────────────────────────────────────────────────┐
+│                    TWIN AGENT                         │
+│                                                      │
+│  INPUTS (all computed locally, never raw data):      │
+│  ┌────────────────────────────────────────────────┐  │
+│  │ • Pattern summary: peak hours, worst hours     │  │
+│  │ • Streak info: current, best, last broken      │  │
+│  │ • Trend: improving/stable/declining            │  │
+│  │ • Recent sessions: last 7 days aggregated      │  │
+│  │ • Twin state: level, personality, mood         │  │
+│  │ • User goal: study/work/create                 │  │
+│  │ • Today's challenge: status, progress          │  │
+│  │ • Chat history: last 10 messages (local)       │  │
+│  └────────────────────────────────────────────────┘  │
+│                      │                               │
+│                      ▼                               │
+│  SYSTEM PROMPT (defines twin personality):           │
+│  ┌────────────────────────────────────────────────┐  │
+│  │ "You are {twinName}, a Level {level} Focus     │  │
+│  │  Twin. You're {personality_traits}. Your user  │  │
+│  │  focuses best at {peakHours}. Their streak is  │  │
+│  │  {streak} days. Trend is {trend}. Give brief,  │  │
+│  │  warm, actionable coaching. Be encouraging     │  │
+│  │  but honest. Max 2-3 sentences."               │  │
+│  └────────────────────────────────────────────────┘  │
+│                      │                               │
+│                      ▼                               │
+│  LLM INFERENCE (on-device or cloud API)              │
+│                      │                               │
+│                      ▼                               │
+│  OUTPUT: Natural language coaching response           │
+│  "Nice 47-min streak! You're on fire this week 🔥    │
+│   Tomorrow's a Thursday — historically your best day. │
+│   Let's push for 55 minutes. I believe in you."      │
+└──────────────────────────────────────────────────────┘
+
+
+3.2 When the Agent Speaks:
+
+The twin is NOT a chatbot. It speaks at specific trigger points:
+
+  a) POST-SESSION FEEDBACK (after every focus session)
+     Input: Session duration, rating, time of day, comparison to recent history
+     Output: 2-3 sentences of personalized encouragement + insight
+     Example: "42 minutes on a Wednesday afternoon — that's 10 more than your usual mid-week! 
+               Your consistency is building. Ready for tomorrow's challenge?"
+
+  b) DAILY GREETING (when app is opened)
+     Input: Time of day, streak status, today's challenge, recent trend
+     Output: 1-2 sentences of context-aware greeting
+     Example: "Morning! Day 12 of your streak. You've been killing it after lunch lately — 
+               maybe start today's session around 1pm?"
+
+  c) WEEKLY INSIGHT (once per week, deeper analysis)
+     Input: Full week's stats, comparison to last 4 weeks, patterns
+     Output: 3-5 sentences of deep coaching
+     Example: "This week: 4h 20m total focus, up 18% from last week. Your Tuesday sessions 
+               are consistently your strongest. One thing I noticed — you skip weekends entirely. 
+               Even a short 15-min Saturday session could help maintain momentum."
+
+  d) CHAT MODE (user can talk to twin anytime) (Premium)
+     Input: User's question + full context (stats, patterns, history)
+     Output: Conversational response
+     Example: User: "Why can't I focus after 5pm?"
+              Twin: "Looking at your data — your focus drops 60% after 5pm on weekdays. 
+                     But here's the thing: on days when you take a break between 4-5pm, 
+                     your evening sessions are 40% better. Try a walk at 4:30?"
+
+
+3.3 What Goes to the LLM (Privacy-Safe Data Only):
+
+SENT to LLM (computed statistics):
+  ✅ "Average focus: 38 minutes"
+  ✅ "Peak hours: 2pm-4pm weekdays"
+  ✅ "Streak: 12 days, best: 18 days"
+  ✅ "Trend: improving, +15% this week"
+  ✅ "Today: 2 sessions, 78 minutes total"
+  ✅ "Mood ratings: mostly 'great' in mornings"
+
+NEVER sent to LLM (raw personal data):
+  ❌ Exact timestamps of every session
+  ❌ App usage data
+  ❌ Location data
+  ❌ Any personal identifiers
+  ❌ Browser history
+  ❌ Raw sensor data
+
+The LLM receives the same information a human coach would get from a weekly check-in — 
+aggregated stats, not a surveillance log.
+
+
+3.4 LLM Inference Options (Tiered Approach):
+
+  TIER 1 — On-Device (Chrome Prompt API / Gemini Nano) [Best Privacy]
+    - Chrome 138+ ships Gemini Nano built into the browser
+    - Access via window.ai.languageModel.create() API
+    - ZERO network requests for AI coaching
+    - Limitations: smaller model, simpler responses
+    - Best for: daily greetings, post-session feedback
+
+  TIER 2 — On-Device (WebLLM via WebGPU) [Good Privacy, More Power]
+    - Run Phi-3 Mini or Gemma 2B in-browser via WebGPU
+    - Models downloaded once, cached locally
+    - Requires device with decent GPU (most phones 2024+)
+    - Better quality responses than Gemini Nano
+    - Best for: weekly insights, chat mode
+
+  TIER 3 — Cloud API (Gemini API / OpenAI) [Fallback]
+    - For devices that can't run on-device LLMs
+    - Only computed stats sent (as described above)
+    - Faster, smarter responses
+    - Requires internet connection
+    - Best for: chat mode, complex coaching questions
+
+  APP BEHAVIOR:
+    - Try Tier 1 first (check if Chrome Prompt API available)
+    - Fallback to Tier 2 (check if WebGPU available + model cached)
+    - Fallback to Tier 3 (cloud API with privacy-safe stats only)
+    - Final fallback: pre-written template responses (no LLM needed)
+
+
+3.5 Agent Memory (Stored Locally in IndexedDB):
+
+agentMemory: {
+  chatHistory: [
+    { role: "twin", content: "...", timestamp: ... },
+    { role: "user", content: "...", timestamp: ... }
+  ],  // last 50 messages, older ones summarized
+  personalitySeed: string,         // defines twin's personality traits
+  insightHistory: [                // what the twin has told the user
+    { insight: "...", date: ..., acknowledged: boolean }
+  ],
+  coachingPreferences: {
+    preferredTone: "motivational" | "analytical" | "gentle",
+    responseLength: "short" | "medium",
+    notificationStyle: "push" | "in-app-only"
+  }
+}
+
+
+4. Data Flow — Focus Session (Updated with Agent)
+---------------------------------------------------
+
+User taps "Start Focus"
+       │
+       ▼
+[ Session Manager ]
+  - Creates session record (start_time, goal, challenge_id)
+  - Starts timer
+  - Triggers twin mood: "focusing"
+       │
+       ▼ (session running)
+[ Timer ticks ] → UI updates (elapsed time, twin animation)
+       │
+       ▼ (user ends session OR timer completes)
+[ Session Manager ]
+  - Records: end_time, duration, completion, rating
+  - Saves to IndexedDB
+       │
+       ▼
+[ Pattern Engine ] (runs after each session)
+  - Recomputes stats from last 30 days of sessions
+  - Generates updated pattern summary
+  - Saves to IndexedDB
+       │
+       ├──────────────────────────────┐
+       ▼                              ▼
+[ Twin Evolution Engine ]     [ Twin Agent ] (NEW)
+  - Awards XP                  - Receives updated stats
+  - Checks level-up            - Builds prompt with context
+  - Updates twin state          - Calls LLM (on-device or cloud)
+  - Saves to localStorage      - Gets personalized coaching response
+       │                        - Saves to agent memory
+       │                              │
+       └──────────────┬───────────────┘
+                      ▼
+             [ Post-Session UI ]
+               - Twin celebration animation
+               - AI-generated coaching message (from Agent)
+               - Insight card with personalized advice
+               - Twin growth animation (if leveled up)
+
+
+5. Data Flow — Daily Challenge Generation
+-------------------------------------------
+
+App opens (or midnight trigger via Service Worker)
+       │
+       ▼
+[ Pattern Engine ] reads session history
+       │
+       ▼
+[ Challenge Generator ]
+  - Looks at user's recent performance
+  - Selects challenge type based on patterns:
+    * Streak builder: "Beat yesterday's longest session by 5 min"
+    * Volume builder: "Do 3 sessions today"
+    * Weak spot: "Try focusing at [your worst time] — break the pattern"
+    * Consistency: "Focus for at least 30 min today"
+  - Difficulty scales with user level
+  - Saves today's challenge to localStorage
+       │
+       ▼
+[ Twin Agent ] generates greeting
+  - Receives: time of day, streak, challenge, recent trend
+  - Outputs: natural language greeting with today's context
+  - Example: "Good afternoon! You've got a 9-day streak going. 
+             Today's challenge: hit 50 minutes. Your 2pm slot is usually golden — 
+             maybe start there?"
+       │
+       ▼
+[ Home Dashboard ] displays challenge card + twin greeting
+
+
+6. Data Storage Schema (IndexedDB)
+------------------------------------
+
+sessions: {
+  id: auto-increment,
+  startTime: timestamp,
+  endTime: timestamp,
+  duration: seconds,
+  completed: boolean,
+  rating: "great" | "okay" | "tough" | null,
+  challengeId: string | null,
+  dayOfWeek: 0-6,
+  hourOfDay: 0-23
+}
+
+patterns: {
+  lastComputed: timestamp,
+  avgDurationByDay: { 0: min, 1: min, ... },
+  avgDurationByHour: { 0: min, 1: min, ... },
+  bestStreakLength: number,
+  currentStreakLength: number,
+  currentStreakStartDate: date,
+  completionRate7d: percentage,
+  completionRate30d: percentage,
+  trend: "improving" | "stable" | "declining",
+  insights: [{ type, message, confidence, createdAt }]
+}
+
+agentMemory: {
+  chatHistory: [{ role, content, timestamp }],
+  personalitySeed: string,
+  insightHistory: [{ insight, date, acknowledged }],
+  coachingPreferences: { preferredTone, responseLength, notificationStyle }
+}
+
+twinState (localStorage): {
+  name: string,
+  level: number,
+  xp: number,
+  totalXp: number,
+  mood: "idle" | "focusing" | "celebrating" | "tired" | "sleeping" | "thinking",
+  unlockedMoods: string[],
+  streak: number,
+  achievements: string[],
+  personalityTraits: string[]
+}
+
+preferences (localStorage): {
+  goalType: "study" | "work" | "create",
+  defaultSessionDuration: minutes,
+  ambientSound: string | null,
+  notifications: boolean,
+  theme: "dark" | "auto",
+  llmPreference: "on-device" | "cloud" | "auto"
+}
+
+
+7. Pattern Engine — Stats Layer (Feeds the Agent)
+---------------------------------------------------
+
+The Pattern Engine computes raw statistics. The Agent interprets them.
+
+Pattern Engine (TypeScript, runs locally):
+  - Moving averages (7-day, 30-day) for trend detection
+  - Day-of-week / hour-of-day aggregation for peak time detection
+  - Streak tracking with gap tolerance
+  - Simple regression for trend direction
+  - Mood correlation analysis
+
+These stats become the Agent's "memory" — the LLM never sees raw session data, 
+only the Pattern Engine's computed summary.
+
+Think of it as:
+  Pattern Engine = the analyst (crunches numbers)
+  Twin Agent     = the coach (interprets numbers into human advice)
+
+
+8. PWA & Offline Architecture
+-------------------------------
+  - Service Worker caches all assets for full offline use
+  - IndexedDB works fully offline
+  - Daily challenge generated client-side (no server needed)
+  - On-device LLM (Tier 1/2) works fully offline
+  - Cloud LLM (Tier 3) gracefully degrades to template responses when offline
+  - Push notifications via Service Worker for daily reminders
+  - App installable on home screen (Android + iOS Safari)
+
+
+9. Security & Privacy Considerations
+--------------------------------------
+  - Raw session data NEVER leaves IndexedDB
+  - LLM only receives computed statistics (aggregated, anonymous)
+  - On-device LLM preferred — zero network for AI features
+  - Cloud LLM fallback: no user identifiers sent, stats only
+  - IndexedDB is sandboxed per origin by the browser
+  - No analytics SDKs (no Google Analytics, no Mixpanel)
+  - Chat history stored locally, never synced
+  - Future sync: client-side encryption BEFORE any data touches network

@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  .dark {
+    /* Midnight Aurora — vibrant, deep, alive */
+    --background: 232 45% 8%;
+    --foreground: 220 30% 92%;
+
+    --card: 230 40% 12%;
+    --card-foreground: 220 30% 92%;
+
+    --popover: 230 40% 12%;
+    --popover-foreground: 220 30% 92%;
+
+    --primary: 175 90% 55%;
+    --primary-foreground: 232 45% 8%;
+
+    --secondary: 280 70% 60%;
+    --secondary-foreground: 220 30% 98%;
+
+    --muted: 230 25% 18%;
+    --muted-foreground: 225 15% 55%;
+
+    --accent: 35 95% 60%;
+    --accent-foreground: 232 45% 8%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 220 30% 98%;
+
+    --success: 155 75% 50%;
+    --success-foreground: 232 45% 8%;
+
+    --border: 230 30% 22%;
+    --input: 230 30% 22%;
+    --ring: 175 90% 55%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 232 42% 10%;
+    --sidebar-foreground: 220 30% 92%;
+    --sidebar-primary: 175 90% 55%;
+    --sidebar-primary-foreground: 232 45% 8%;
+    --sidebar-accent: 230 25% 16%;
+    --sidebar-accent-foreground: 220 30% 92%;
+    --sidebar-border: 230 30% 20%;
+    --sidebar-ring: 175 90% 55%;
+  }
+
+  .light {
+    /* ═══ AETHOS SLEEK & PUNCHY ARCHITECTURE ═══ */
+    --background: 0 0% 98%;        /* #FAFAFA */
+    --foreground: 224 71% 4%;      /* #030712 */
+
+    --card: 0 0% 100%;             /* #FFFFFF */
+    --card-foreground: 224 71% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    --primary: 0 0% 0%;            /* Pure Black */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 96%;       /* #F4F4F5 */
+    --secondary-foreground: 240 6% 10%;
+
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%; /* #71717A */
+
+    --accent: 189 100% 50%;        /* #00F2FE Cyan Accent */
+    --accent-foreground: 193 82% 31%; /* #0E7490 */
+
+    --destructive: 330 81% 60%;    /* #EC4899 Magenta Accent */
+    --destructive-foreground: 336 74% 35%; /* #9D174D */
+
+    --success: 53 98% 64%;         /* #FDE047 Yellow Accent */
+    --success-foreground: 39 84% 29%; /* #854D0E */
+
+    --border: 220 13% 91%;         /* #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: 0 0% 0%;
+
+    --radius: 2rem;                /* 32px for large bento */
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 224 71% 4%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 0 0% 0%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-foreground antialiased;
+    font-family: 'Space Grotesk', sans-serif;
+    /* Desktop backdrop for the mobile frame */
+    background-color: #f4f4f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .dark body {
+    background-color: #09090b;
+  }
+
+  /* The Android Device Frame */
+  #root {
+    @apply bg-background;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 600px) {
+    #root {
+      width: 412px;
+      height: 850px;
+      max-height: 90vh;
+      border-radius: 36px;
+      /* Android hardware bezels */
+      border: 8px solid #000;
+      box-shadow: 
+        0 0 0 2px #3f3f46,
+        0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    
+    .light #root {
+      box-shadow: 
+        0 0 0 2px #d4d4d8,
+        0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Force full-screen elements to respect the phone container, not the browser window */
+    .min-h-screen {
+      min-height: 100% !important;
+    }
+    .h-screen {
+      height: 100% !important;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Geist Mono', monospace;
+    letter-spacing: -0.04em;
+  }
+
+  /* Sleek & Punchy: Light-mode typography */
+  .light h1, .light h2, .light h3 {
+    color: #030712;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+  }
+}
+
+@layer utilities {
+  /* Aurora glass — dark base */
+  .glass-surface {
+    @apply backdrop-blur-xl rounded-2xl;
+    background: linear-gradient(135deg, rgba(30, 35, 70, 0.6), rgba(20, 25, 55, 0.4));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* ═══ SLEEK & PUNCHY LIGHT OVERRIDES ═══ */
+
+  .light .glass-surface {
+    background: #FFFFFF;
+    border: 1px solid rgba(229, 231, 235, 0.7);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04);
+    border-radius: 32px;
+    backdrop-filter: none;
+  }
+
+  .light .glass-surface-elevated {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,1);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+    border-radius: 32px;
+    backdrop-filter: blur(40px);
+  }
+
+  .light .aurora-bg {
+    background: #FAFAFA !important;
+    animation: none !important;
+  }
+
+  .light .glow-cyan,
+  .light .glow-amber,
+  .light .glow-violet {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  /* Sleek snappy interaction */
+  .sleek-transition {
+    transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .glass-surface-elevated {
+    @apply backdrop-blur-2xl rounded-2xl;
+    background: linear-gradient(135deg, rgba(35, 40, 80, 0.7), rgba(25, 30, 65, 0.5));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Neural Pulse breathing */
+  .neural-pulse {
+    animation: neuralPulse 2000ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Vibrant glows */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 230, 220, 0.2), 0 0 60px rgba(0, 230, 220, 0.06);
+  }
+  .glow-amber {
+    box-shadow: 0 0 20px rgba(255, 180, 50, 0.2), 0 0 60px rgba(255, 180, 50, 0.06);
+  }
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(160, 80, 255, 0.2), 0 0 60px rgba(160, 80, 255, 0.06);
+  }
+
+  .border-glow {
+    border: 1px solid rgba(0, 230, 220, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .aegis-transition {
+    transition: all 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .press-effect:active {
+    transform: scale(0.96);
+  }
+
+  .mono-nums {
+    font-family: 'Geist Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gradient-text-cyan {
+    background: linear-gradient(135deg, #00E6DC, #00B4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-aurora {
+    background: linear-gradient(135deg, #00E6DC, #A050FF, #FFB432);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-violet {
+    background: linear-gradient(135deg, #7C5CFF, #A050FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-amber {
+    background: linear-gradient(135deg, #FFB432, #FF7849);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* Keyframes */
+@keyframes neuralPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10px, -15px) scale(1.05); }
+  66% { transform: translate(-8px, 8px) scale(0.97); }
+}
+
+@keyframes gradientSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes zkFlicker {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Aurora ambient background */
+@keyframes auroraShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.aurora-bg {
+  background: linear-gradient(135deg, 
+    rgba(0,230,220,0.06) 0%, 
+    rgba(160,80,255,0.04) 30%, 
+    rgba(255,180,50,0.03) 60%, 
+    rgba(0,180,255,0.05) 100%
+  );
+  background-size: 400% 400%;
+  animation: auroraShift 15s ease infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+/* Light-mode scrollbar */
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Serenity snappy micro-interaction */
+.serenity-transition {
+  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}

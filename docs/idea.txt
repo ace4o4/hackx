@@ -1,0 +1,35 @@
+Project Name: Focus Twin — Your Private AI Productivity Companion
+
+⚠️ The Core Problem:
+Every productivity app today is either a dumb timer (Forest, Pomodoro) or a creepy surveillance dashboard (RescueTime, ActivTrak) that uploads your entire digital life to someone else's server. Neither actually LEARNS you. Neither adapts. Neither feels like something you want to come back to. The result: 90% of productivity apps are abandoned within 2 weeks because they show you numbers without telling you what to DO about them.
+
+🧠 The Contrarian Insight:
+People don't need another timer or another dashboard. They need a companion that knows them — their rhythms, their weak spots, their best hours — and coaches them like a friend who genuinely wants them to win. And critically: your focus patterns, your procrastination habits, your productive hours — this is deeply personal data. It should never leave your device. Period.
+
+⚡ The Solution:
+Focus Twin is a mobile-first PWA where every user gets a personal AI companion — their "Evo Twin" — that lives on their phone and learns their unique productivity patterns entirely on-device. No data leaves the phone. The twin tracks when you focus best, when you get distracted, how long your focus streaks last, and what breaks that focus. Over days and weeks, it becomes the world's most personalized productivity coach — because it's trained on YOUR life, not generic advice from a blog post.
+
+🎯 The Core Loop (One Screen, 30 Seconds):
+1. User opens app → Twin greets them with today's personalized challenge: "Yesterday you hit 40 minutes deep focus. Today let's push for 50."
+2. User taps "Start Focus" → Timer begins, twin enters focus mode (visual animation), ambient sounds play
+3. Session ends → Twin gives instant feedback: "Great streak! You focused 47 minutes. Your best time is 2-4pm on weekdays — want me to remind you tomorrow?"
+4. Over time → Twin surfaces insights: "You've been most productive after morning walks. You lose focus after 3 back-to-back meetings."
+
+🎨 Why Users Stay:
+- Emotional connection: Your twin GROWS with you — new moods, new animations, new personality traits unlock as you build focus streaks
+- Tangible value: Weekly/monthly reports showing your actual productivity patterns — not generic tips, YOUR data
+- Privacy as feature: "Everything stays on your phone" — no account needed, no cloud sync, no creepy tracking
+- Gamification: Focus streaks, daily challenges, twin evolution, achievement badges
+
+🛡️ Why This Wins:
+- Forest has 10M+ users with just a tree timer → proven market, but zero intelligence
+- RescueTime tracks everything but feels invasive → privacy gap
+- Centered does AI nudges but cloud-based → privacy gap
+- ActivityWatch is private but no AI, no companion, no coaching → experience gap
+- NOBODY combines: AI coaching + emotional companion + on-device privacy + gamification
+- The moat IS the data: the longer you use it, the smarter YOUR twin gets. Switching cost increases every day.
+
+💰 Revenue Model:
+- Free tier: Basic focus timer, daily challenge, simple insights, twin with 3 moods
+- Premium (₹149/month): Advanced pattern analytics, weekly deep reports, full twin personality evolution, custom ambient sounds, unlimited challenge types
+- This is the Duolingo/Forest/Calm model — proven at scale in the productivity/wellness category

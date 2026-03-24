@@ -1,0 +1,220 @@
+FOCUS TWIN — Technology Choices & Rationale
+=============================================
+
+1. Frontend Framework: React 18 + TypeScript + Vite
+-----------------------------------------------------
+Choice: Keep existing stack (React 18, TypeScript, Vite 8)
+Why:
+  - Already set up and working in current codebase
+  - Vite = fastest dev server and build tool available
+  - TypeScript = type safety for complex state management (sessions, patterns, twin state)
+  - React 18 = stable, massive ecosystem, easy to hire for
+  - NO Next.js needed — we're a 100% client-side PWA, no SSR required
+
+Changed from original: Removed Next.js 15. Focus Twin doesn't need server-side rendering.
+We're a PWA that runs entirely in the browser. Vite + React is simpler and faster.
+
+
+2. Styling: Tailwind CSS 3 + Framer Motion
+--------------------------------------------
+Choice: Keep existing stack
+Why:
+  - Tailwind = rapid UI development, consistent design system
+  - Framer Motion = smooth animations for twin avatar, session transitions, celebration effects
+  - Already configured in current codebase
+  - Dark mode first — matches premium productivity aesthetic
+  - Glassmorphism cards, neon accents, fluid micro-interactions
+
+
+3. State Management: React Context + localStorage + IndexedDB
+---------------------------------------------------------------
+Choice: No external state library needed
+Why:
+  - Twin state + preferences = localStorage (fast reads, small data)
+  - Session history + patterns = IndexedDB (structured queries, large dataset)
+  - React Context for UI state (current page, current session, modals)
+  - No Redux/Zustand overhead needed — app state is simple
+  - idb library (lightweight IndexedDB wrapper) for cleaner async queries
+
+Note: Zustand is already in package.json (dependency of @react-three/drei).
+If needed, can use it, but Context should be sufficient for v1.
+
+
+4. Animation & Avatar: Framer Motion + CSS
+--------------------------------------------
+Choice: Replace Three.js / @react-three/drei with pure Framer Motion + CSS
+Why:
+  - Three.js is overkill for a 2D animated avatar
+  - WebGL = battery drain on mobile — exactly what we want to avoid
+  - Framer Motion can handle all twin animations: mood transitions, particle effects, celebrations
+  - CSS animations for ambient effects: glowing, pulsing, floating particles
+  - Result: Buttery smooth animations at a fraction of the power cost
+
+Removed: @react-three/drei, three — these add 200KB+ bundle size for no benefit in v1.
+Future: If we want 3D twin avatar in v2, add back selectively.
+
+
+5. Data Layer: IndexedDB (via idb) + localStorage
+----------------------------------------------------
+Choice: 100% on-device storage
+Why:
+  - IndexedDB:
+    * Structured storage with indexing — can query "all sessions on Mondays" fast
+    * No size limits that matter (sessions are tiny, even years of data = few MB)
+    * Works offline, works in PWA, works in all modern browsers
+    * idb wrapper makes it Promise-based and ergonomic
+  - localStorage:
+    * Twin state, preferences, today's challenge — small, fast, synchronous reads
+    * Perfect for data that the UI reads on every render
+
+NOT using: Supabase, Firebase, or any cloud database for core data.
+Future: Encrypted Supabase sync for cross-device (v2/v3).
+
+
+6. Pattern Analysis: Vanilla TypeScript (Stats Layer)
+------------------------------------------------------
+Choice: Custom statistical analysis for pattern detection
+Why:
+  - TensorFlow.js adds 1-3MB to bundle, drains battery, needs GPU
+  - For the patterns we're detecting (peak hours, trends, streaks), simple stats work better
+  - Moving averages, aggregations, correlations = 50 lines of TypeScript
+  - Results are explainable: "Your best hour is 2pm" — not "model confidence: 0.73"
+  - Runs in < 5ms, no async overhead, no model loading time
+  - These computed stats FEED the AI Agent (see section 6b)
+
+Removed: TensorFlow.js, MediaPipe — replaced by stats + LLM approach.
+The Pattern Engine handles number-crunching. The LLM handles language.
+
+
+6b. AI Agent / LLM Inference (The Brain)
+------------------------------------------
+Choice: 3-tier LLM strategy — on-device first, cloud fallback
+
+This is what makes the twin INTELLIGENT. The Pattern Engine crunches numbers.
+The LLM turns those numbers into natural-language personalized coaching.
+
+TIER 1 — Chrome Prompt API (Gemini Nano) [BEST — Zero Network]
+  - Chrome 138+ ships Gemini Nano built into the browser
+  - API: window.ai.languageModel.create()
+  - Completely on-device, no internet needed, no data leaves phone
+  - Free, no API key needed
+  - Limitations: smaller model, simpler responses
+  - Perfect for: daily greetings, post-session feedback, simple coaching
+  - Bundle impact: 0KB (built into browser)
+
+TIER 2 — WebLLM via WebGPU [GOOD — More Power, Still Local]
+  - Run Phi-3 Mini (3.8B) or Gemma 2B directly in-browser
+  - Uses WebGPU for hardware acceleration
+  - Model downloaded once (~2GB), cached in browser storage
+  - Better quality responses than Gemini Nano
+  - Requires decent GPU (most 2024+ phones/laptops)
+  - Perfect for: weekly insights, chat mode, complex questions
+  - Bundle impact: ~50KB (WebLLM runtime), model cached separately
+
+TIER 3 — Cloud API (Gemini API) [FALLBACK — Best Quality]
+  - For devices that can't run on-device LLMs
+  - Only computed stats sent (NEVER raw session data)
+  - Fastest, smartest responses
+  - Requires internet + API key
+  - Cost: Gemini API free tier = 15 RPM, enough for daily coaching
+  - Perfect for: chat mode, deep analysis, premium features
+  - Bundle impact: ~2KB (API client)
+
+FALLBACK — Template Responses [ALWAYS WORKS]
+  - Pre-written coaching templates with variable slots
+  - "Great session! {duration} minutes — that's {comparison} than yesterday."
+  - No LLM needed, works offline on any device
+  - Basic but functional
+  - Bundle impact: ~5KB (template strings)
+
+WHAT GOES TO THE LLM:
+  ✅ Computed stats: "avg focus: 38min, peak: 2-4pm, streak: 12 days"
+  ❌ NEVER: raw timestamps, app usage, personal identifiers, location
+
+Why this approach:
+  - On-device LLMs are NOW viable in browsers (Chrome Prompt API, WebLLM)
+  - Privacy preserved: stats-only approach means LLM never sees raw data
+  - Graceful degradation: works on any device, even without internet
+  - No expensive API costs at scale for basic features
+
+
+7. Authentication: Supabase Auth (Optional)
+---------------------------------------------
+Choice: Replace Privy with Supabase Auth
+Why:
+  - Privy = embedded crypto wallets — we don't need wallets anymore
+  - Supabase Auth = email/Google login, free tier, simple setup
+  - Auth is OPTIONAL in v1 — app works fully without login
+  - Auth enables: premium subscription management, future encrypted sync
+  - Supabase free tier: 50,000 monthly active users — more than enough
+
+Removed: Privy, WalletConnect, all Web3 authentication.
+
+
+8. PWA & Deployment: Vite PWA Plugin + Vercel/Netlify
+--------------------------------------------------------
+Choice: vite-plugin-pwa for Service Worker + static hosting
+Why:
+  - vite-plugin-pwa auto-generates Service Worker for offline caching
+  - Full offline support — app works without internet
+  - Installable on Android home screen + iOS Safari
+  - No app store submission, no review process, instant updates
+  - Deploy to Vercel or Netlify — free tier, global CDN, auto-deploy from Git
+
+
+9. Audio: Howler.js or Web Audio API
+--------------------------------------
+Choice: Lightweight ambient sounds for focus sessions
+Why:
+  - Focus sessions benefit from ambient sounds (rain, lo-fi, white noise)
+  - Howler.js = 7KB, handles audio playback, looping, volume control
+  - Alternatively: Web Audio API directly for zero dependencies
+  - Audio files hosted as static assets or lazy-loaded
+  - Premium feature: more sound options
+
+
+10. Payments (Premium): Stripe or Razorpay
+---------------------------------------------
+Choice: Razorpay for India market, Stripe for global
+Why:
+  - ₹149/month subscription needs payment processing
+  - Razorpay = best for Indian users (UPI, cards, wallets)
+  - Stripe = global fallback
+  - Integrate with Supabase to track premium status
+  - This is the only server-side component: payment webhooks → Supabase user.premium = true
+
+
+SUMMARY — Final Tech Stack
+============================
+
+| Layer           | Technology                          | Bundle Impact |
+|-----------------|-------------------------------------|---------------|
+| Framework       | React 18 + TypeScript               | ~40KB         |
+| Build           | Vite 8                              | Dev only      |
+| Styling         | Tailwind CSS 3                      | ~10KB         |
+| Animation       | Framer Motion                       | ~30KB         |
+| UI Components   | Radix UI (existing shadcn/ui setup) | ~20KB         |
+| AI Agent (T1)   | Chrome Prompt API (Gemini Nano)     | 0KB (built-in)|
+| AI Agent (T2)   | WebLLM via WebGPU                   | ~50KB runtime |
+| AI Agent (T3)   | Gemini API (cloud fallback)         | ~2KB          |
+| Data (large)    | IndexedDB via idb                   | ~1KB          |
+| Data (small)    | localStorage                        | 0KB           |
+| Audio           | Howler.js or Web Audio API          | ~7KB          |
+| PWA             | vite-plugin-pwa                     | Dev only      |
+| Auth (optional) | Supabase Auth                       | ~15KB         |
+| Payments        | Razorpay/Stripe                     | External      |
+| Analytics       | Plausible (self-hosted) or none     | ~1KB          |
+|                 |                                     |               |
+| TOTAL           |                                     | ~175KB gzip   |
+
+REMOVED from original stack:
+  ❌ Next.js 15 (don't need SSR)
+  ❌ TensorFlow.js (don't need ML)
+  ❌ MediaPipe (don't need ML)
+  ❌ Three.js / @react-three/drei (don't need WebGL)
+  ❌ Privy (don't need crypto wallets)
+  ❌ WalletConnect (don't need Web3)
+  ❌ StarkWare S-two (don't need ZK proofs)
+  ❌ rust-libp2p (don't need P2P networking)
+  ❌ Polygon zkEVM (don't need blockchain)
+  ❌ Letta API (replaced by local agent memory in IndexedDB + LLM inference)
