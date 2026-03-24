@@ -95,7 +95,7 @@ const AethosScan = () => {
         </motion.div>
 
         {/* Global Network Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           {[
             { label: "NETWORK STATUS", value: "LIVE", icon: Activity, color: "text-green-400" },
             { label: "TOTAL PEERS", value: "2,847", icon: Shield, color: "text-primary" },
@@ -121,8 +121,8 @@ const AethosScan = () => {
         </motion.div>
 
         {/* Latest Transactions Table */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="lg:col-span-2 border border-border bg-card/40 rounded-2xl overflow-hidden backdrop-blur-md">
+        <div className="flex flex-col gap-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full border border-border bg-card/40 rounded-2xl overflow-hidden backdrop-blur-md">
             <div className="border-b border-border p-5 flex items-center justify-between bg-black/20">
               <h2 className="text-sm font-mono font-bold text-white flex items-center gap-2">
                 <Hash className="w-4 h-4 text-primary" /> LATEST ML TRANSACTIONS (usr_demo_01)
@@ -181,7 +181,7 @@ const AethosScan = () => {
           </motion.div>
 
           {/* LIVE MEMPOOL SIDEBAR */}
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="border border-border bg-card/60 rounded-2xl p-5 backdrop-blur-md">
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="w-full border border-border bg-card/60 rounded-2xl p-5 backdrop-blur-md">
              <div className="flex items-center justify-between mb-6">
                 <h3 className="text-[10px] font-mono font-bold text-white tracking-widest uppercase flex items-center gap-2">
                   <Activity className="w-3.5 h-3.5 text-primary animate-pulse" /> Live Peers

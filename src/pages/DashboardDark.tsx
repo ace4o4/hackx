@@ -181,11 +181,11 @@ const DashboardDark = () => {
         THE ORGANIC TECH-SCULPTURE (Dark Theme)
         =======================================================================
       */}
-      <main className="relative w-full h-full max-w-[412px] mx-auto px-4 flex flex-col items-center justify-center">
+      <main className="w-full h-full max-w-[412px] mx-auto flex flex-col items-center">
 
-        {/* 
-          TOP LEFT SATELLITE: Swarm Sync
-        */}
+        {/* First Screen (Hero Section) */}
+        <div className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center shrink-0 px-4">
+          {/* SATELLITE BLOCKS... */}
         <motion.div 
           className="absolute top-[12%] left-0 w-[75%] bg-white/5 backdrop-blur-[40px] border border-white/10 p-5 rounded-[20px_100px_100px_20px] shadow-[0_20px_40px_-10px_rgba(0,242,254,0.3)] z-20 flex items-center justify-between"
           initial={{ opacity: 0, x: -50 }}
@@ -276,13 +276,12 @@ const DashboardDark = () => {
              <ActivitySquare className="w-6 h-6 text-[#EC4899]" strokeWidth={1.5} />
           </div>
         </motion.div>
-
         {/* 
           BOTTOM CENTER ACTION BALL
         */}
         <motion.button
             onClick={() => navigate("/quest")}
-            className="absolute bottom-[5%] right-6 bg-white text-black px-8 py-5 flex items-center gap-3 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.3)] z-50 transition-transform active:scale-95 group overflow-hidden"
+            className="absolute bottom-8 right-8 bg-white text-black px-8 py-5 flex items-center gap-3 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.3)] z-50 transition-transform hover:scale-105 active:scale-95 group overflow-hidden"
             style={{ clipPath: "polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)" }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -292,13 +291,14 @@ const DashboardDark = () => {
            <span className="font-bold tracking-widest text-black uppercase text-[11px] relative z-10">Init Quest</span>
            <ChevronRight className="w-4 h-4 text-black relative z-10 group-hover:translate-x-1 transition-transform" />
         </motion.button>
+        </div> {/* End Hero Section */}
 
         {/* 
           NETWORK LEDGER SECTION
         */}
         {proofs.length > 0 && (
           <motion.div
-            className="w-full mt-[85vh] pb-10 px-2 z-30 relative"
+            className="w-full pb-10 px-4 z-30 relative"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
