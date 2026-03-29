@@ -6,7 +6,7 @@ import { getAllSessions } from "@/lib/sessionManager";
 import { computePatterns, formatHour, DAY_NAMES, type PatternSummary } from "@/lib/patternEngine";
 import { loadTwinState } from "@/lib/twinEngine";
 import { getInsight } from "@/lib/twinAgent";
-import { fetchAIMemories, runGlobalTraining } from "@/lib/ml";
+import { fetchAIMemories, runGlobalTraining, type AIMemory } from "@/lib/ml";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
 import EvoTwin from "@/components/EvoTwin";
 
@@ -14,7 +14,7 @@ const Insights = () => {
   const navigate = useNavigate();
   const [patterns, setPatterns] = useState<PatternSummary | null>(null);
   const [insight, setInsight] = useState<string>("");
-  const [memories, setMemories] = useState<any[]>([]);
+  const [memories, setMemories] = useState<AIMemory[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 

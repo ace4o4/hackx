@@ -13,6 +13,7 @@ import FocusSession from "./pages/FocusSession.tsx";
 import Insights from "./pages/Insights.tsx";
 import MicroQuest from "./pages/MicroQuest.tsx";
 import AethosScan from "./pages/AethosScan.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Gateway />} />
             <Route path="/genesis" element={<GenesisRoom />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/home" element={<FocusDashboard />} />
             <Route path="/focus" element={<FocusSession />} />

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Zap, BarChart2, Cpu, Activity, Network, Wallet, ExternalLink } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Zap, BarChart2, Cpu, Activity, Network, Wallet, ExternalLink, ShieldCheck } from "lucide-react";
 import EvoTwin from "@/components/EvoTwin";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
 import { playClick, playWhoosh } from "@/lib/sounds";
@@ -119,8 +119,9 @@ const FocusDashboard = () => {
                 setWalletAddress(address);
                 const bal = await getWalletBalance(address);
                 setWalletBalance(bal);
-              } catch (e: any) {
-                alert(e.message || "Petra Wallet not found");
+              } catch (e: unknown) {
+                const error = e as Error;
+                alert(error.message || "Petra Wallet not found");
               }
             }}
             className="flex items-center gap-1.5 bg-primary/10 border border-primary/30 text-primary rounded-full px-3 py-1.5 text-[9px] font-mono font-bold tracking-wider uppercase hover:bg-primary/20 transition-colors"
@@ -178,8 +179,9 @@ const FocusDashboard = () => {
                   const { signer } = await connectWallet();
                   await deployContract(signer);
                   setContractDeployed(true);
-                } catch (e: any) {
-                  alert("Deploy failed: " + (e.message || "Unknown error"));
+                } catch (e: unknown) {
+                  const error = e as Error;
+                  alert("Deploy failed: " + (error.message || "Unknown error"));
                 } finally {
                   setIsDeploying(false);
                 }
@@ -362,6 +364,13 @@ const FocusDashboard = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Global Admin Link */}
+        <div className="mt-8 pt-6 border-t border-white/5 opacity-30 group-hover:opacity-100 transition-opacity">
+          <Link to="/admin" className="flex items-center justify-center gap-2 text-[10px] font-mono text-muted-foreground hover:text-primary transition-colors">
+            <ShieldCheck className="w-3 h-3" /> [DECENTRALIZED_NODE_ADMIN_PORTAL]
+          </Link>
+        </div>
       </div>
     </div>
   );

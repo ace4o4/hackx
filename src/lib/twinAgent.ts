@@ -110,8 +110,7 @@ const SYSTEM_PROMPT =
 async function queryAI(prompt: string): Promise<string | null> {
   // 1. Try On-Device Chrome AI
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ai = (window as any).ai;
+    const ai = window.ai;
     if (ai?.languageModel) {
       const session = await ai.languageModel.create({ systemPrompt: SYSTEM_PROMPT });
       const result = await session.prompt(prompt);

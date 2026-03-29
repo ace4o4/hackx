@@ -33,9 +33,10 @@ const getUserMemories = (userId: string): Promise<string[]> => {
     db.all(
       'SELECT memory_text FROM ai_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
       [userId],
-      (err, rows: any[]) => {
+      (err: Error | null, rows: unknown[]) => {
         if (err || !rows) return resolve([]);
-        resolve(rows.map(r => r.memory_text));
+        const typedRows = rows as { memory_text: string }[];
+        resolve(typedRows.map(r => r.memory_text));
       }
     );
   });
@@ -96,7 +97,7 @@ app.post('/api/ai/prompt', async (req: Request, res: Response) => {
     }
 
     const data = await response.json();
-    const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Keep up the great focus!";
+    const textResult = data.choices?.[0]?.message?.content?.trim() || "Stay focused and keep pushing!";
     
     res.json({
       success: true,
@@ -121,7 +122,7 @@ app.post('/api/learn', (req: Request, res: Response) => {
   db.run(
     'INSERT INTO ai_memory (user_id, memory_text) VALUES (?, ?)',
     [user_id, memory],
-    function (err) {
+    function (err: Error | null) {
       if (err) {
         console.error("Failed to commit AI memory:", err);
         return res.status(500).json({ error: 'Core failure in learning matrix' });

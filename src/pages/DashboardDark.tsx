@@ -110,8 +110,9 @@ const DashboardDark = () => {
                 setWalletAddress(address);
                 const bal = await getWalletBalance(address);
                 setWalletBalance(bal);
-              } catch (e: any) {
-                alert(e.message || "Wallet connection failed");
+              } catch (e: unknown) {
+                const error = e as Error;
+                alert(error.message || "Wallet connection failed");
               }
             }}
             className="flex items-center gap-2 bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] rounded-full px-3 py-1.5 text-[10px] font-mono font-bold tracking-wider uppercase hover:bg-[#00F2FE]/20 transition-colors"
@@ -141,9 +142,10 @@ const DashboardDark = () => {
                   const { signer } = await connectWallet();
                   await deployContract(signer);
                   setContractDeployed(true);
-                } catch (e: any) {
-                  console.error("Deploy failed:", e);
-                  alert("Deploy failed: " + (e.message || "Unknown error"));
+                } catch (e: unknown) {
+                  const error = e as Error;
+                  console.error("Deploy failed:", error);
+                  alert("Deploy failed: " + (error.message || "Unknown error"));
                 } finally {
                   setIsDeploying(false);
                 }

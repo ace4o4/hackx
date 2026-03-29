@@ -4,7 +4,7 @@
  * Connects the EvoAegis frontend to Aptos Testnet using Petra Wallet.
  * Submits zero-knowledge proof deltas as entry function payloads.
  */
-import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, Network, InputSubmitTransactionData } from "@aptos-labs/ts-sdk";
 import { WalletCore } from "@aptos-labs/wallet-adapter-core";
 
 // ============================================================================
@@ -32,7 +32,7 @@ export function getContractAddress(): string {
 // WALLET CONNECTION
 // ============================================================================
 
-export async function connectWallet(): Promise<{ address: string; signer: any }> {
+export async function connectWallet(): Promise<{ address: string; signer: WalletCore }> {
   try {
     // Wait for the discovery of standard wallets if not already populated
     if (walletCore.wallets.length === 0) {
@@ -64,19 +64,20 @@ export async function connectWallet(): Promise<{ address: string; signer: any }>
     localStorage.setItem("evoaegis_wallet_connected", "true");
     
     return { address: account.address.toString(), signer: walletCore };
-  } catch (err: any) {
-    if (err.name === 'WalletNotReadyError') {
+  } catch (err: unknown) {
+    const error = err as Error;
+    if (error.name === 'WalletNotReadyError') {
       throw new Error("Aptos wallet not found. Please install Petra Wallet Extension.");
     }
-    if (err.message && err.message.includes('already connected') && walletCore.account) {
+    if (error.message && error.message.includes('already connected') && walletCore.account) {
       localStorage.setItem("evoaegis_wallet_connected", "true");
       return { address: walletCore.account.address.toString(), signer: walletCore };
     }
-    throw err;
+    throw error;
   }
 }
 
-export async function autoConnectWallet(): Promise<{ address: string; signer: any } | null> {
+export async function autoConnectWallet(): Promise<{ address: string; signer: WalletCore } | null> {
   const isConnected = localStorage.getItem("evoaegis_wallet_connected");
   if (isConnected === "true") {
     try {
@@ -105,7 +106,8 @@ export async function getWalletBalance(address: string): Promise<string> {
     const resources = await aptosNode.getAccountResources({ accountAddress: address });
     const coinStore = resources.find((r) => r.type === "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>");
     if (coinStore) {
-       const bal = (coinStore.data as any).coin.value;
+       const balanceData = coinStore.data as { coin: { value: string } };
+       const bal = balanceData.coin.value;
        return (Number(bal) / 1e8).toFixed(4); // Convert Octas to APT
     }
     return "0.0000";
@@ -128,7 +130,7 @@ export function isWalletConnected(): boolean {
  * Triggers Petra wallet.
  */
 export async function submitProofOnChain(
-  signer: any,
+  signer: WalletCore,
   proofHash: string,
   dataType: string
 ): Promise<{ txHash: string; blockNumber: number }> {
@@ -136,8 +138,9 @@ export async function submitProofOnChain(
   
   if (!walletCore.account) throw new Error("Wallet not connected");
 
-  // Format payload according to new Wallet Standard
-  const payload = {
+  // Format payload according to Wallet Standard (v2 union types can be strict)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const payload: any = {
     data: {
       function: "0x1::aptos_account::transfer",
       functionArguments: [walletCore.account.address.toString(), 100]
@@ -157,7 +160,7 @@ export async function submitProofOnChain(
   };
 }
 
-export async function getOnChainProofs(count: number = 10): Promise<Array<any>> {
+export async function getOnChainProofs(_count: number = 10): Promise<Array<unknown>> {
   // Legacy simulation wrapper
   return [];
 }
@@ -170,7 +173,7 @@ export async function getOnChainProofCount(): Promise<number> {
 /**
  * Mocks deployment process for Aptos since existing UI needs 'Deploy'
  */
-export async function deployContract(signer: any): Promise<string> {
+export async function deployContract(_signer: WalletCore): Promise<string> {
   console.log("[Aptos] Initializing global Aptos Module...");
   
   // Fake delay for UI

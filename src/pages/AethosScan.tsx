@@ -16,10 +16,17 @@ interface ZKProof {
   created_at: string;
 }
 
+interface PendingTx {
+  hash: string;
+  type: string;
+  reward: string;
+  timestamp: number;
+}
+
 const AethosScan = () => {
   const navigate = useNavigate();
   const [proofs, setProofs] = useState<ZKProof[]>([]);
-  const [pendingTxs, setPendingTxs] = useState<any[]>([]);
+  const [pendingTxs, setPendingTxs] = useState<PendingTx[]>([]);
   const [blockHeight, setBlockHeight] = useState(1489920);
   const [loading, setLoading] = useState(true);
   const [onChainCount, setOnChainCount] = useState(0);

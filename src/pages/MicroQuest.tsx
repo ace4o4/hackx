@@ -96,7 +96,7 @@ const MicroQuest = () => {
     let animationFrameId: number;
 
     try {
-      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyzer = audioCtx.createAnalyser();
       analyzer.fftSize = 64;
       source = audioCtx.createMediaStreamSource(stream);
@@ -147,7 +147,7 @@ const MicroQuest = () => {
     });
 
     return () => { isMounted = false; };
-  }, [phase, captureMode]);
+  }, [phase, captureMode, mediaUrl]);
 
   // Broadcasting — Try real on-chain, fallback to simulated
   useEffect(() => {

@@ -1,9 +1,21 @@
-/**
- * ML Burst Training Engine
- * Uses on-device resources (Camera/Mic) to extract and analyze real sensory data.
- * Persists raw data to LocalVault (IndexedDB) for privacy-preserving persistence.
- */
 import { saveToVault, getVaultRecords } from "./localVault";
+
+export interface ZKProof {
+  id: number;
+  user_id: string;
+  data_type: string;
+  proof_hash: string;
+  reward: string;
+  tx_hash: string;
+  created_at: string;
+}
+
+export interface AIMemory {
+  id: number;
+  user_id: string;
+  memory_text: string;
+  created_at: string;
+}
 
 export async function runBurstTraining(
   mode: 'audio' | 'image',
@@ -42,7 +54,7 @@ export async function runBurstTraining(
       // Analyze Audio Data (Energy/Volumes)
       const response = await fetch(mediaUrl);
       const arrayBuffer = await response.arrayBuffer();
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
       const channelData = audioBuffer.getChannelData(0);
       
@@ -132,9 +144,9 @@ export async function runBurstTraining(
         user_id: "usr_demo_01",
         memory: memoryInsight
       })
-    }).catch(err => console.warn("[ML Core] Learning sync failed", err));
+    }).catch((err: Error) => console.warn("[ML Core] Learning sync failed", err));
 
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn("[ML Engine] Backend sync failed. Continuing locally.", err);
   }
 
@@ -184,13 +196,13 @@ export async function runGlobalTraining(): Promise<{ evolutionScore: number, rec
 /**
  * Fetches the recent ZK-Proofs synchronized to the backend ledger.
  */
-export async function fetchRecentProofs() {
+export async function fetchRecentProofs(): Promise<ZKProof[]> {
   try {
     const res = await fetch("/api/sync/history/usr_demo_01");
     if (!res.ok) throw new Error("Sync history failed");
     const data = await res.json();
     return data.proofs || [];
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn("Could not fetch proof history:", err);
     return [];
   }
@@ -199,13 +211,13 @@ export async function fetchRecentProofs() {
 /**
  * Fetches the recent AI Memories synchronized to the backend.
  */
-export async function fetchAIMemories() {
+export async function fetchAIMemories(): Promise<AIMemory[]> {
   try {
     const res = await fetch("/api/learn/history/usr_demo_01");
     if (!res.ok) throw new Error("Memory history failed");
     const data = await res.json();
     return data.memories || [];
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn("Could not fetch AI memory history:", err);
     return [];
   }
