@@ -41,6 +41,13 @@ export async function connectWallet(): Promise<{ address: string; signer: any }>
     
     console.log("Available standard wallets:", walletCore.wallets.map(w => w.name));
     
+    // If we are already connected, return the existing account
+    if (walletCore.account) {
+      localStorage.setItem("evoaegis_wallet_connected", "true");
+      console.log("Wallet already connected:", walletCore.account.address.toString());
+      return { address: walletCore.account.address.toString(), signer: walletCore };
+    }
+    
     // Connect to Petra (it will be discovered via AIP-62 standard)
     const petraName = walletCore.wallets.find(w => w.name.includes("Petra"))?.name || "Petra";
     await walletCore.connect(petraName);
@@ -52,12 +59,44 @@ export async function connectWallet(): Promise<{ address: string; signer: any }>
     if (!account) {
       throw new Error(`Connection failed. Discovered wallets: ${walletCore.wallets.map(w => w.name).join(", ")}`);
     }
+    
+    // Remember the connection for future reloads
+    localStorage.setItem("evoaegis_wallet_connected", "true");
+    
     return { address: account.address.toString(), signer: walletCore };
   } catch (err: any) {
     if (err.name === 'WalletNotReadyError') {
       throw new Error("Aptos wallet not found. Please install Petra Wallet Extension.");
     }
+    if (err.message && err.message.includes('already connected') && walletCore.account) {
+      localStorage.setItem("evoaegis_wallet_connected", "true");
+      return { address: walletCore.account.address.toString(), signer: walletCore };
+    }
     throw err;
+  }
+}
+
+export async function autoConnectWallet(): Promise<{ address: string; signer: any } | null> {
+  const isConnected = localStorage.getItem("evoaegis_wallet_connected");
+  if (isConnected === "true") {
+    try {
+      console.log("[Aptos] Auto-connecting wallet...");
+      return await connectWallet();
+    } catch (e) {
+      console.warn("[Aptos] Auto-connect failed:", e);
+      localStorage.removeItem("evoaegis_wallet_connected");
+    }
+  }
+  return null;
+}
+
+export async function disconnectWallet(): Promise<void> {
+  localStorage.removeItem("evoaegis_wallet_connected");
+  try {
+    await walletCore.disconnect();
+    console.log("[Aptos] Wallet disconnected.");
+  } catch(e) {
+    console.warn("Wallet disconnect error", e);
   }
 }
 

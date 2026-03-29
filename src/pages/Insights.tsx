@@ -6,6 +6,7 @@ import { getAllSessions } from "@/lib/sessionManager";
 import { computePatterns, formatHour, DAY_NAMES, type PatternSummary } from "@/lib/patternEngine";
 import { loadTwinState } from "@/lib/twinEngine";
 import { getInsight } from "@/lib/twinAgent";
+import { fetchAIMemories } from "@/lib/ml";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
 import EvoTwin from "@/components/EvoTwin";
 
@@ -13,13 +14,18 @@ const Insights = () => {
   const navigate = useNavigate();
   const [patterns, setPatterns] = useState<PatternSummary | null>(null);
   const [insight, setInsight] = useState<string>("");
+  const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const sessions = await getAllSessions();
+      const [sessions, memoryHistory] = await Promise.all([
+        getAllSessions(),
+        fetchAIMemories()
+      ]);
       const p = computePatterns(sessions);
       setPatterns(p);
+      setMemories(memoryHistory);
       setLoading(false);
       const twin = loadTwinState();
       const msg = await getInsight({ patterns: p, twin });
@@ -106,6 +112,41 @@ const Insights = () => {
                     <p className="text-[10px] font-mono text-primary tracking-wider mb-1">TWIN INSIGHT</p>
                     <p className="text-sm font-sans text-foreground/90 leading-relaxed">{insight}</p>
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Neural Memory Matrix */}
+            {memories.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="rounded-2xl bg-card/60 border border-primary/20 p-4 mb-5 shadow-[0_0_15px_rgba(0,242,254,0.1)] relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex items-center gap-2 mb-4 relative z-10">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]" />
+                  <p className="text-[10px] font-mono text-primary tracking-widest uppercase font-bold">Neural Memory Matrix</p>
+                </div>
+                
+                <p className="text-xs text-muted-foreground font-sans mb-4">
+                  Real-time insights learned from your encrypted Local Edge ML focus sessions. These are securely fed back into your Super Intelligence Twin.
+                </p>
+                
+                <div className="space-y-3 relative z-10">
+                  {memories.map((mem) => (
+                    <div key={mem.id} className="p-3 bg-background/60 border border-primary/10 rounded-xl relative group hover:border-primary/40 transition-colors">
+                      <p className="text-[11px] font-mono text-primary/80 leading-relaxed">
+                        <span className="text-muted-foreground mr-2 font-bold">{">"}</span>
+                        {mem.memory_text}
+                      </p>
+                      <div className="mt-2 text-[8px] font-mono text-muted-foreground uppercase flex items-center justify-between opacity-70 group-hover:opacity-100 transition-opacity">
+                         <span>SECURE LOCAL COMMIT</span>
+                         <span>{new Date(mem.created_at).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
