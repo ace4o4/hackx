@@ -48,6 +48,18 @@ const db = new sqlite3.Database(dbPath, (err) => {
         )
       `);
 
+      // AI Memory for Continuous Learning
+      // Dynamically fed into the Gemini Prompt
+      db.run(`
+        CREATE TABLE IF NOT EXISTS ai_memory (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          memory_text TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+      `);
+
       // Seed a default mock user if none exists (for hackathon demo)
       db.get('SELECT COUNT(*) as count FROM users', (err, row: { count: number }) => {
         if (!err && row.count === 0) {

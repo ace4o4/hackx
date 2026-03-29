@@ -14,13 +14,26 @@ app.use(express.json());
 
 const SYSTEM_PROMPT = "You are a friendly, concise AI productivity coach for a focus app called Focus Twin. Keep responses under 2 sentences. Be warm and encouraging. Never ask clarifying questions, simply provide the insight or greeting requested.";
 
+const getUserMemories = (userId: string): Promise<string[]> => {
+  return new Promise((resolve) => {
+    db.all(
+      'SELECT memory_text FROM ai_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
+      [userId],
+      (err, rows: any[]) => {
+        if (err || !rows) return resolve([]);
+        resolve(rows.map(r => r.memory_text));
+      }
+    );
+  });
+};
+
 /**
  * Universal Secure LLM Proxy Endpoint
  * Frontend sends a specific context prompt, backend securely calls Gemini API.
  * This prevents the GEMINI_API_KEY from leaking to the browser.
  */
 app.post('/api/ai/prompt', async (req: Request, res: Response) => {
-  const { prompt } = req.body;
+  const { prompt, user_id = 'usr_demo_01' } = req.body;
   
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Valid prompt string is required' });
@@ -38,11 +51,19 @@ app.post('/api/ai/prompt', async (req: Request, res: Response) => {
   }
 
   try {
+    const memories = await getUserMemories(user_id);
+    const memoryContext = memories.length > 0 
+      ? `\n\nSUPER INTELLIGENCE CONTEXT (Learned from user): \n${memories.map(m => "- " + m).join("\n")}`
+      : "";
+    const dynamicSystemInstruction = SYSTEM_PROMPT + memoryContext;
+
+    console.log(`[AI Core] Generating response with ${memories.length} real memories injected.`);
+
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        system_instruction: { parts: { text: SYSTEM_PROMPT } },
+        system_instruction: { parts: { text: dynamicSystemInstruction } },
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.7,
@@ -68,6 +89,29 @@ app.post('/api/ai/prompt', async (req: Request, res: Response) => {
     console.error('[AI Proxy] Internal Error:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+});
+
+/**
+ * Continuous Learning Endpoint (Super Intelligence)
+ * The AI actually learns from the user's raw data / focus sessions.
+ */
+app.post('/api/learn', (req: Request, res: Response) => {
+  const { user_id, memory } = req.body;
+  if (!user_id || !memory) return res.status(400).json({ error: 'Missing learning data' });
+
+  console.log(`[AI Core] Real Learning Event Received: "${memory}"`);
+  
+  db.run(
+    'INSERT INTO ai_memory (user_id, memory_text) VALUES (?, ?)',
+    [user_id, memory],
+    function (err) {
+      if (err) {
+        console.error("Failed to commit AI memory:", err);
+        return res.status(500).json({ error: 'Core failure in learning matrix' });
+      }
+      res.json({ success: true, message: "AI has integrated this knowledge." });
+    }
+  );
 });
 
 // Mock endpoint to simulate cross-device Sync Verification (Optional feature)
@@ -130,6 +174,20 @@ app.get('/api/sync/history/:user_id', (req: Request, res: Response) => {
     (err: Error | null, rows: unknown[]) => {
       if (err) return res.status(500).json({ error: 'Failed to fetch ledger history', proofs: [] });
       res.json({ proofs: rows || [] });
+    }
+  );
+});
+
+// Fetch recent AI Memories for a user
+app.get('/api/learn/history/:user_id', (req: Request, res: Response) => {
+  const { user_id } = req.params;
+  
+  db.all(
+    'SELECT * FROM ai_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
+    [user_id],
+    (err: Error | null, rows: unknown[]) => {
+      if (err) return res.status(500).json({ error: 'Failed to fetch memory history', memories: [] });
+      res.json({ memories: rows || [] });
     }
   );
 });

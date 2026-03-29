@@ -11,7 +11,7 @@ import { loadTwinState, levelProgress, xpForLevel } from "@/lib/twinEngine";
 import { getTodayChallenge, type DailyChallenge } from "@/lib/challengeGen";
 import { getGreeting } from "@/lib/twinAgent";
 import { fetchRecentProofs } from "@/lib/ml";
-import { connectWallet, deployContract, getContractAddress, shortenAddress, getWalletBalance, getContractExplorerUrl } from "@/lib/blockchain";
+import { connectWallet, deployContract, getContractAddress, shortenAddress, getWalletBalance, getContractExplorerUrl, autoConnectWallet, disconnectWallet } from "@/lib/blockchain";
 
 interface ZKProof {
   id: number;
@@ -52,6 +52,15 @@ const FocusDashboard = () => {
       setLoading(false);
       const msg = await getGreeting({ patterns, twin: twinState, todayMins: mins });
       setGreeting(msg);
+      
+      // Auto-connect wallet if previously connected
+      autoConnectWallet().then(async (res) => {
+        if (res) {
+          setWalletAddress(res.address);
+          const bal = await getWalletBalance(res.address);
+          setWalletBalance(bal);
+        }
+      });
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -86,10 +95,21 @@ const FocusDashboard = () => {
 
       <div className="fixed top-5 right-5 z-50 flex items-center gap-2">
         {walletAddress ? (
-          <div className="flex items-center gap-1.5 bg-card/60 border border-primary/20 rounded-full px-2.5 py-1">
+          <div className="flex items-center gap-1.5 bg-card/60 border border-primary/20 rounded-full pl-2.5 pr-1 py-1">
             <Wallet className="w-3 h-3 text-primary" />
             <span className="text-[9px] font-mono text-foreground/80">{shortenAddress(walletAddress)}</span>
-            {walletBalance && <span className="text-[8px] font-mono text-muted-foreground">{walletBalance} APT</span>}
+            {walletBalance && <span className="text-[8px] font-mono text-muted-foreground mr-1">{walletBalance} APT</span>}
+            <button
+              onClick={async () => {
+                await disconnectWallet();
+                setWalletAddress("");
+                setWalletBalance("");
+              }}
+              className="w-5 h-5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors"
+              title="Disconnect Wallet"
+            >
+              <span className="text-[10px] font-bold">&times;</span>
+            </button>
           </div>
         ) : (
           <button

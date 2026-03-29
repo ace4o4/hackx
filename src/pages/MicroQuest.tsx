@@ -9,6 +9,7 @@ import PremiumCard from "@/components/PremiumCard";
 import StatusBadge from "@/components/StatusBadge";
 import { playClick, playWhoosh, playSuccess } from "@/lib/sounds";
 import { connectWallet, submitProofOnChain, getExplorerUrl, getContractAddress } from "@/lib/blockchain";
+import { getVaultRecords } from "@/lib/localVault";
 
 type Phase = "select" | "capture" | "preview" | "burst" | "broadcasting" | "complete";
 type CaptureMode = "audio" | "image";
@@ -52,6 +53,7 @@ const MicroQuest = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioDuration, setAudioDuration] = useState(0);
   const [audioProgress, setAudioProgress] = useState(0);
+  const [vaultStats, setVaultStats] = useState({ count: 0 });
 
   const currentBurstStage = useMemo<BurstStage>(() => {
     if (burstProgress < 33) return "quantizing";
@@ -78,6 +80,9 @@ const MicroQuest = () => {
 
   // Cleanup on unmount
   useEffect(() => {
+    getVaultRecords().then(records => {
+      setVaultStats({ count: records.length });
+    });
     return stopStream;
   }, [stopStream]);
 
@@ -128,7 +133,7 @@ const MicroQuest = () => {
     let isMounted = true;
     
     import("@/lib/ml").then(({ runBurstTraining }) => {
-      runBurstTraining(captureMode, (progress) => {
+      runBurstTraining(captureMode, mediaUrl, (progress) => {
         if (isMounted) setBurstProgress(Math.min(100, progress));
       }).then((result) => {
         if (isMounted) {
@@ -614,16 +619,17 @@ const MicroQuest = () => {
               <div className="w-full max-w-xs h-32 bg-black/80 border border-primary/30 rounded-xl p-3 overflow-hidden font-mono text-[9px] text-primary/80 flex flex-col justify-end relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                  <div className="absolute top-0 right-0 p-1 px-3 bg-primary/20 text-primary rounded-bl-xl border-b border-l border-primary/30 font-bold uppercase tracking-widest text-[8px] flex items-center gap-1">
                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                   LIVE LOGS
+                   LOCAL ML ENGINE
                  </div>
                  <motion.div animate={{ y: [0, -18] }} transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }} className="flex flex-col gap-1.5 leading-none">
-                   <p className="opacity-40">{">"} Init TensorFlow.js Lite Core...</p>
-                   {burstProgress > 5 && <p className="opacity-50">{">"} Load MediaPipe Vision/Voice Models [{captureMode === "audio" ? "MFCC Audio processing..." : "CNN Frame Edge Detection..."}]</p>}
-                   {burstProgress > 25 && <p className="opacity-60">{">"} Quantizing local ML weights. Compressing...</p>}
-                   {burstProgress > 45 && <p className="opacity-70">{">"} Burst Training Active. Local Loss: {(0.084 - burstProgress*0.0005).toFixed(4)}.</p>}
-                   {burstProgress > 65 && <p className="opacity-90">{">"} Injecting Differential Privacy Noise...</p>}
-                   {burstProgress > 80 && <p className="text-secondary opacity-100 font-bold">{">"} Neutralizing Data Inversion Attack Vectors...</p>}
-                   {burstProgress > 90 && <p className="text-primary font-bold">{">"} Securing delta with S² cryptographic ZK layer...</p>}
+                   <p className="opacity-40">{">"} Raw Data Access: Local Sandboxed Context</p>
+                   {burstProgress > 5 && <p className="opacity-50">{">"} Compiling local {captureMode === "audio" ? "audio frequencies" : "pixel vectors"}...</p>}
+                   {burstProgress > 25 && <p className="opacity-60">{">"} Extracting ML weights. RAW DATA NEVER LEAVES DEVICE.</p>}
+                   {burstProgress > 40 && <p className="text-secondary font-bold">{">"} [LOCAL_VAULT] Committing raw {captureMode} blob to IndexedDB...</p>}
+                   {burstProgress > 55 && <p className="opacity-70">{">"} Training Loss: {(0.084 - burstProgress*0.0005).toFixed(4)}.</p>}
+                   {burstProgress > 70 && <p className="text-secondary font-bold">{">"} [MODEL_UPDATE] Reinforcing with {vaultStats.count} historical local records.</p>}
+                   {burstProgress > 85 && <p className="opacity-90">{">"} Destroying raw data tensors. Retaining only ML Delta.</p>}
+                   {burstProgress > 90 && <p className="text-primary font-bold">{">"} Preparing ZK payload for Aptos blockchain -{">"}_</p>}
                    <p className="text-success">{">"} [{Math.random().toString(16).slice(2, 12).toUpperCase()}] _</p>
                  </motion.div>
               </div>
