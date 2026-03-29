@@ -124,7 +124,7 @@ async function queryAI(prompt: string): Promise<string | null> {
 
   // 2. Try Node Proxy (Tier 3 Fallback)
   try {
-    const res = await fetch("http://localhost:3002/api/ai/prompt", {
+    const res = await fetch("/api/ai/prompt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })

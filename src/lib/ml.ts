@@ -42,7 +42,7 @@ export async function runBurstTraining(
   // 4. Sync ONLY the proof hash to the ML Brain Server (Zero-Knowledge)
   onProgress(90);
   try {
-    const res = await fetch("http://localhost:3002/api/sync", {
+    const res = await fetch("/api/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -71,7 +71,7 @@ export async function runBurstTraining(
  */
 export async function fetchRecentProofs() {
   try {
-    const res = await fetch("http://localhost:3002/api/sync/history/usr_demo_01");
+    const res = await fetch("/api/sync/history/usr_demo_01");
     if (!res.ok) throw new Error("Sync history failed");
     const data = await res.json();
     return data.proofs || [];

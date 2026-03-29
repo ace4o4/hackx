@@ -33,7 +33,7 @@ const DashboardDark = () => {
         "Peer verified ZK-Audio proof [0x7a...d9]",
         "New Block height #1,489,921 reached",
         "Evo-1X node synced to mainnet",
-        "Reward disbursed: +0.0003 ETH to Peer_82",
+        "Reward disbursed: +0.0003 APT to Peer_82",
         "Quantum-Safe tunnel established",
         "Validation complete: Frame_4402"
       ];
@@ -100,7 +100,7 @@ const DashboardDark = () => {
           <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5">
             <Wallet className="w-3.5 h-3.5 text-[#00F2FE]" />
             <span className="text-[10px] font-mono text-white/80">{shortenAddress(walletAddress)}</span>
-            {walletBalance && <span className="text-[9px] font-mono text-white/40">{walletBalance} ETH</span>}
+            {walletBalance && <span className="text-[9px] font-mono text-white/40">{walletBalance} APT</span>}
           </div>
         ) : (
           <button
@@ -171,7 +171,7 @@ const DashboardDark = () => {
             className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 text-[9px] font-mono text-green-400 hover:bg-green-500/20 transition-colors"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            Contract Live on Sepolia <ExternalLink className="w-3 h-3" />
+            Contract Live on Aptos Testnet <ExternalLink className="w-3 h-3" />
           </a>
         </motion.div>
       )}

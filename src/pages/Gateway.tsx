@@ -70,9 +70,9 @@ const Gateway = () => {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           className="text-3xl sm:text-4xl font-mono font-bold tracking-tighter mb-4 mt-6"
         >
-          <span className="gradient-text-aurora">JOIN THE GLOBAL</span>
+          <span className="gradient-text-aurora">EVO_AEGIS</span>
           <br />
-          <span className="text-foreground">INTELLIGENCE_</span>
+          <span className="text-foreground">SWARM HYPER-INTELLIGENCE_</span>
         </motion.h1>
 
         <motion.p
@@ -81,7 +81,7 @@ const Gateway = () => {
           transition={{ duration: 0.7, delay: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
           className="text-sm text-muted-foreground font-sans leading-relaxed mb-10 max-w-sm"
         >
-          Train your personal AI twin through micro-quests. Earn rewards while contributing to the decentralized swarm intelligence.
+          Train your personal AI twin through zero-knowledge micro-quests. Your data never leaves your phone.
         </motion.p>
 
         <motion.div

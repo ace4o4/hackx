@@ -89,7 +89,7 @@ const FocusDashboard = () => {
           <div className="flex items-center gap-1.5 bg-card/60 border border-primary/20 rounded-full px-2.5 py-1">
             <Wallet className="w-3 h-3 text-primary" />
             <span className="text-[9px] font-mono text-foreground/80">{shortenAddress(walletAddress)}</span>
-            {walletBalance && <span className="text-[8px] font-mono text-muted-foreground">{walletBalance} ETH</span>}
+            {walletBalance && <span className="text-[8px] font-mono text-muted-foreground">{walletBalance} APT</span>}
           </div>
         ) : (
           <button
@@ -100,7 +100,7 @@ const FocusDashboard = () => {
                 const bal = await getWalletBalance(address);
                 setWalletBalance(bal);
               } catch (e: any) {
-                alert(e.message || "MetaMask not found");
+                alert(e.message || "Petra Wallet not found");
               }
             }}
             className="flex items-center gap-1.5 bg-primary/10 border border-primary/30 text-primary rounded-full px-3 py-1.5 text-[9px] font-mono font-bold tracking-wider uppercase hover:bg-primary/20 transition-colors"
@@ -120,15 +120,15 @@ const FocusDashboard = () => {
           className="flex items-center justify-between mb-6"
         >
           <div>
-            <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">Focus Twin</p>
-            <h1 className="text-xl font-mono font-bold tracking-tighter gradient-text-aurora">Home</h1>
+            <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">EvoAegis</p>
+            <h1 className="text-xl font-mono font-bold tracking-tighter gradient-text-aurora">Swarm Hub</h1>
           </div>
           <div className="flex gap-2">
             <button
               className="px-3 h-9 rounded-full bg-card/60 border border-primary/20 flex items-center gap-2 hover:bg-muted/40 transition-colors"
             >
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-mono text-primary tracking-widest">NODE ONLINE</span>
+              <span className="text-[10px] font-mono text-primary tracking-widest">NETWORK LIVE</span>
             </button>
             <button
               onClick={handleInsights}
@@ -186,7 +186,7 @@ const FocusDashboard = () => {
               className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 text-[9px] font-mono text-green-500 hover:bg-green-500/20 transition-colors"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              Contract Live on Sepolia <ExternalLink className="w-3 h-3" />
+              Differential Privacy Sync Live <ExternalLink className="w-3 h-3" />
             </a>
           </motion.div>
         )}
@@ -287,10 +287,10 @@ const FocusDashboard = () => {
           >
             <div className="absolute inset-0 w-full h-full bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
             <Cpu className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">TRAIN ML BRAIN</span>
+            <span className="relative z-10">BURST TRAINING</span>
             <div className="flex items-center gap-1.5 opacity-70 relative z-10">
               <Activity className="w-3 h-3 animate-pulse" />
-              <span className="text-[10px]">ZK-SYNC</span>
+              <span className="text-[10px]">P2P ZK-SYNC</span>
             </div>
           </motion.button>
         </motion.div>
@@ -312,7 +312,7 @@ const FocusDashboard = () => {
                 onClick={() => { playClick(); navigate('/explorer'); }}
                 className="text-[9px] font-mono text-primary flex items-center gap-1 hover:underline p-1"
               >
-                View on AethosScan &rarr;
+                View on AegisScan &rarr;
               </button>
             </div>
             

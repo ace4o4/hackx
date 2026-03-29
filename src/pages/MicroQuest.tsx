@@ -81,14 +81,46 @@ const MicroQuest = () => {
     return stopStream;
   }, [stopStream]);
 
-  // Fake Audio Visualizer while recording
+  // Real Audio Visualizer while recording
   useEffect(() => {
-    if (phase !== "capture" || captureMode !== "audio") return;
-    const interval = setInterval(() => {
-      setAudioLevels(prev => prev.map(() => 0.1 + Math.random() * 0.9));
-    }, 100);
-    return () => clearInterval(interval);
-  }, [phase, captureMode]);
+    if (phase !== "capture" || captureMode !== "audio" || !stream) return;
+    
+    let audioCtx: AudioContext;
+    let analyzer: AnalyserNode;
+    let source: MediaStreamAudioSourceNode;
+    let animationFrameId: number;
+
+    try {
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      analyzer = audioCtx.createAnalyser();
+      analyzer.fftSize = 64;
+      source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyzer);
+
+      const bufferLength = analyzer.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateLevels = () => {
+        analyzer.getByteFrequencyData(dataArray);
+        // Map bins down to 24 bars, normalizing 0-255 to 0.1-1.0
+        const newLevels = Array.from({ length: 24 }, (_, i) => {
+          const value = dataArray[i] || 0;
+          return 0.05 + (value / 255) * 0.95;
+        });
+        setAudioLevels(newLevels);
+        animationFrameId = requestAnimationFrame(updateLevels);
+      };
+
+      updateLevels();
+    } catch (err) {
+      console.error("Audio Context failed", err);
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
+    };
+  }, [phase, captureMode, stream]);
 
   // ML Burst Training 
   useEffect(() => {
@@ -579,19 +611,19 @@ const MicroQuest = () => {
               </div>
               
               {/* Fake Terminal Logs */}
-              <div className="w-full max-w-xs h-28 bg-black/80 border border-primary/30 rounded-xl p-3 overflow-hidden font-mono text-[9px] text-primary/80 flex flex-col justify-end relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+              <div className="w-full max-w-xs h-32 bg-black/80 border border-primary/30 rounded-xl p-3 overflow-hidden font-mono text-[9px] text-primary/80 flex flex-col justify-end relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                  <div className="absolute top-0 right-0 p-1 px-3 bg-primary/20 text-primary rounded-bl-xl border-b border-l border-primary/30 font-bold uppercase tracking-widest text-[8px] flex items-center gap-1">
                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                    LIVE LOGS
                  </div>
-                 <motion.div animate={{ y: [0, -14] }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }} className="flex flex-col gap-1.5 leading-none">
-                   <p className="opacity-40">{">"} Init distributed tensor pipeline...</p>
-                   {burstProgress > 5 && <p className="opacity-50">{">"} Extract multidimensional embeddings [{captureMode === "audio" ? "MFCCs, Spectral Flux..." : "CNN Edges, Pooling..."}]</p>}
-                   {burstProgress > 25 && <p className="opacity-60">{">"} Quantization pass 1 complete. Compressing...</p>}
-                   {burstProgress > 45 && <p className="opacity-70">{">"} Fine-tuning isolated weights. Loss optimized to {(0.084 - burstProgress*0.0005).toFixed(4)}.</p>}
-                   {burstProgress > 65 && <p className="opacity-90">{">"} Generating Zero-Knowledge constraints map (R1CS)...</p>}
-                   {burstProgress > 80 && <p className="text-secondary opacity-100 font-bold">{">"} Resolving polynomial commitments...</p>}
-                   {burstProgress > 90 && <p className="text-primary font-bold">{">"} Securing proof hash with S² cryptographic layer...</p>}
+                 <motion.div animate={{ y: [0, -18] }} transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }} className="flex flex-col gap-1.5 leading-none">
+                   <p className="opacity-40">{">"} Init TensorFlow.js Lite Core...</p>
+                   {burstProgress > 5 && <p className="opacity-50">{">"} Load MediaPipe Vision/Voice Models [{captureMode === "audio" ? "MFCC Audio processing..." : "CNN Frame Edge Detection..."}]</p>}
+                   {burstProgress > 25 && <p className="opacity-60">{">"} Quantizing local ML weights. Compressing...</p>}
+                   {burstProgress > 45 && <p className="opacity-70">{">"} Burst Training Active. Local Loss: {(0.084 - burstProgress*0.0005).toFixed(4)}.</p>}
+                   {burstProgress > 65 && <p className="opacity-90">{">"} Injecting Differential Privacy Noise...</p>}
+                   {burstProgress > 80 && <p className="text-secondary opacity-100 font-bold">{">"} Neutralizing Data Inversion Attack Vectors...</p>}
+                   {burstProgress > 90 && <p className="text-primary font-bold">{">"} Securing delta with S² cryptographic ZK layer...</p>}
                    <p className="text-success">{">"} [{Math.random().toString(16).slice(2, 12).toUpperCase()}] _</p>
                  </motion.div>
               </div>
@@ -601,7 +633,7 @@ const MicroQuest = () => {
           {phase === "broadcasting" && (
             <motion.div key="broadcasting" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }} className="flex flex-col items-center w-full">
               <h2 className="text-2xl font-mono font-bold tracking-tighter gradient-text-aurora mb-2">ON-CHAIN COMMIT</h2>
-              <p className="text-sm text-primary/80 font-mono mb-10 animate-pulse">Deploying Zero-Knowledge Proof to Sepolia Node...</p>
+              <p className="text-sm text-primary/80 font-mono mb-10 animate-pulse">Syncing Delta via Differential Privacy to Aptos Testnet...</p>
               
               {/* Dynamic Network Connectivity Visualization */}
               <div className="relative w-48 h-48 mb-10 flex items-center justify-center">
@@ -656,8 +688,8 @@ const MicroQuest = () => {
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-wider">Target Node</span>
                     <span className="text-[11px] font-mono text-foreground font-semibold flex items-center gap-2">
-                       <div className="w-4 h-4 rounded border border-primary/50 flex items-center justify-center bg-primary/10 text-[6px]">EVM</div>
-                       Sepolia Testnet
+                       <div className="w-4 h-4 rounded border border-primary/50 flex items-center justify-center bg-primary/10 text-[6px]">MOVE</div>
+                       Aptos Testnet
                     </span>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -682,7 +714,7 @@ const MicroQuest = () => {
               <EvoTwin size={120} level={8} mood="happy" className="mb-6" />
               <StatusBadge label={isOnChain ? "CONFIRMED ON-CHAIN ⛓" : "SIMULATED COMMIT"} variant="success" className="mb-4" />
               <h2 className="text-xl font-mono font-bold tracking-tighter gradient-text-aurora mb-2">ZK-SYNC SUCCESS</h2>
-              <p className="text-sm font-mono text-success mono-nums mb-2">+0.0003 ETH CLAIMED</p>
+              <p className="text-sm font-mono text-success mono-nums mb-2">+0.0003 APT CLAIMED</p>
               {isOnChain && txHash && (
                 <a
                   href={getExplorerUrl(txHash)}
@@ -690,7 +722,7 @@ const MicroQuest = () => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-[10px] font-mono text-primary hover:underline mb-4"
                 >
-                  View on Etherscan <ExternalLink className="w-3 h-3" />
+                  View on Aptos Explorer <ExternalLink className="w-3 h-3" />
                 </a>
               )}
               <ProcessingButton variant="primary" onClick={handleFinish} className="w-full max-w-xs uppercase mt-2">

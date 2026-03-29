@@ -42,66 +42,66 @@ const AethosScan = () => {
     const interval = setInterval(() => {
       setBlockHeight(h => h + 1);
       
-      // Randomly simulate a peer transaction entering the Mempool
-      if (Math.random() > 0.6) {
-        const fakeTx = {
-          hash: "0x" + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join(""),
-          type: Math.random() > 0.5 ? "audio" : "image",
-          reward: "0.0003 ETH",
-          timestamp: Date.now()
-        };
-        setPendingTxs(prev => [fakeTx, ...prev].slice(0, 3));
-      }
-    }, 4500);
+          // Randomly simulate a peer transaction entering the Mempool
+          if (Math.random() > 0.6) {
+            const fakeTx = {
+              hash: "0x" + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join(""),
+              type: Math.random() > 0.5 ? "audio" : "image",
+              reward: "0.0003 APT",
+              timestamp: Date.now()
+            };
+            setPendingTxs(prev => [fakeTx, ...prev].slice(0, 3));
+          }
+        }, 4500);
 
-    return () => clearInterval(interval);
-  }, []);
+        return () => clearInterval(interval);
+      }, []);
 
-  const handleBack = () => {
-    playClick();
-    playWhoosh();
-    navigate("/dashboard");
-  };
+      const handleBack = () => {
+        playClick();
+        playWhoosh();
+        navigate("/dashboard");
+      };
 
-  return (
-    <div className="relative min-h-[100dvh] flex flex-col items-center bg-[#07090E] overflow-hidden px-4 py-8">
-      {/* Immersive Cyberpunk Grid Background */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: `
-          linear-gradient(to right, hsl(var(--primary) / 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px)
-        `,
-        backgroundSize: '40px 40px',
-        maskImage: 'radial-gradient(ellipse 60% 60% at 50% 10%, black, transparent)'
-      }} />
+      return (
+        <div className="relative min-h-[100dvh] flex flex-col items-center bg-[#07090E] overflow-hidden px-4 py-8">
+          {/* Immersive Cyberpunk Grid Background */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: `
+              linear-gradient(to right, hsl(var(--primary) / 0.05) 1px, transparent 1px),
+              linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+            maskImage: 'radial-gradient(ellipse 60% 60% at 50% 10%, black, transparent)'
+          }} />
 
-      <div className="absolute top-5 right-5 z-50">
-        <DoodleThemeToggle />
-      </div>
-
-      <div className="relative z-10 w-full max-w-4xl flex flex-col mt-4">
-        
-        {/* Header Navigation */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 mb-10 w-full">
-          <button onClick={handleBack} className="w-10 h-10 rounded-full bg-card/50 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1 flex flex-col">
-            <h1 className="text-2xl font-mono font-bold tracking-tighter text-white flex items-center gap-3">
-              <Box className="text-primary w-6 h-6" /> AETHOS<span className="text-primary font-normal">SCAN</span>
-            </h1>
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Decentralized ML Brain Explorer</p>
+          <div className="absolute top-5 right-5 z-50">
+            <DoodleThemeToggle />
           </div>
-        </motion.div>
 
-        {/* Global Network Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          {[
-            { label: "NETWORK STATUS", value: "LIVE", icon: Activity, color: "text-green-400" },
-            { label: "TOTAL PEERS", value: "2,847", icon: Shield, color: "text-primary" },
-            { label: "LATEST BLOCK", value: `#${blockHeight.toLocaleString()}`, icon: Box, color: "text-accent" },
-            { label: "GAS PRICE", value: `${(15 + Math.random() * 5).toFixed(2)} Gwei`, icon: Coins, color: "text-secondary" },
-          ].map((stat, i) => (
+          <div className="relative z-10 w-full max-w-4xl flex flex-col mt-4">
+            
+            {/* Header Navigation */}
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 mb-10 w-full">
+              <button onClick={handleBack} className="w-10 h-10 rounded-full bg-card/50 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div className="flex-1 flex flex-col">
+                <h1 className="text-2xl font-mono font-bold tracking-tighter text-white flex items-center gap-3">
+                  <Box className="text-primary w-6 h-6" /> AEGIS<span className="text-primary font-normal">SCAN</span>
+                </h1>
+                <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">EvoAegis Swarm Explorer</p>
+              </div>
+            </motion.div>
+
+            {/* Global Network Stats */}
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {[
+                { label: "NETWORK STATUS", value: "LIVE", icon: Activity, color: "text-green-400" },
+                { label: "TOTAL PEERS", value: "2,847", icon: Shield, color: "text-primary" },
+                { label: "LATEST BLOCK", value: `#${blockHeight.toLocaleString()}`, icon: Box, color: "text-accent" },
+                { label: "GAS PRICE", value: `${(150 + Math.random() * 50).toFixed(0)} Octas`, icon: Coins, color: "text-secondary" },
+              ].map((stat, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-card/40 border border-border p-4 rounded-xl flex flex-col justify-center backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-r from-transparent to-white/5 skew-x-12 translate-x-full group-hover:-translate-x-full transition-transform duration-1000" />
               <div className="flex items-center gap-2 mb-2">

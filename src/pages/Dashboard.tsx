@@ -79,7 +79,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-3 mb-4">
           <StatWidget label="ZK-PROOFS" value="1,482" accent="cyan" delay={0.2} />
           <StatWidget label="LOCAL WEIGHTS" value="847" unit="SYNCED" accent="violet" delay={0.3} />
-          <StatWidget label="REWARD POOL" value="0.0042" unit="ETH" accent="amber" delay={0.4} />
+          <StatWidget label="REWARD POOL" value="0.0042" unit="APT" accent="amber" delay={0.4} />
           <StatWidget label="TWIN LEVEL" value="07" unit="/ 99" accent="success" delay={0.5} />
         </div>
 
@@ -132,7 +132,7 @@ const Dashboard = () => {
             {[
               { time: "14:23:01", msg: "ZK-PROOF #1482 VERIFIED", icon: Shield, cls: "text-primary" },
               { time: "14:22:58", msg: "LOCAL WEIGHTS SYNCED TO SWARM", icon: Zap, cls: "text-secondary" },
-              { time: "14:22:41", msg: "BURST TRAINING +0.0003 ETH", icon: Activity, cls: "text-accent" },
+              { time: "14:22:41", msg: "BURST TRAINING +0.0003 APT", icon: Activity, cls: "text-accent" },
               { time: "14:22:12", msg: "NODE_0x7F3A CONNECTED", icon: Shield, cls: "text-primary" },
             ].map((log, i) => (
               <motion.div
@@ -156,7 +156,7 @@ const Dashboard = () => {
           transition={{ delay: 1.5 }}
           className="mt-6 text-center text-[9px] font-mono text-muted-foreground/25 tracking-[0.2em]"
         >
-          PROOFS: 1,482 | LATENCY: 14ms | REWARD: 0.0042 ETH
+          PROOFS: 1,482 | LATENCY: 14ms | REWARD: 0.0042 APT
         </motion.div>
       </div>
     </div>
