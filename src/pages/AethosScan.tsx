@@ -62,7 +62,7 @@ const AethosScan = () => {
         }, 4500);
 
         return () => clearInterval(interval);
-      }, []);
+      }, [isContractLive]);
 
       const handleBack = () => {
         playClick();
