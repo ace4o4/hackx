@@ -12,6 +12,20 @@ const PORT = process.env.PORT || 3002;
 app.use(cors());
 app.use(express.json());
 
+// Health Check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'active', timestamp: new Date().toISOString() });
+});
+
+// Global Error Handler for the server
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const SYSTEM_PROMPT = "You are a friendly, concise AI productivity coach for a focus app called Focus Twin. Keep responses under 2 sentences. Be warm and encouraging. Never ask clarifying questions, simply provide the insight or greeting requested.";
 
 const getUserMemories = (userId: string): Promise<string[]> => {
@@ -39,43 +53,46 @@ app.post('/api/ai/prompt', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Valid prompt string is required' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY || 'MOCK_KEY';
+  const apiKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || 'MOCK_KEY';
   
-  // If no real API key is setup during hackathon dev, return a mock response
   if (apiKey === 'MOCK_KEY') {
-    console.warn('[AI Proxy] No GEMINI_API_KEY found. Returning mock fallback.');
+    console.warn('[AI Proxy] No API Key found. Returning mock fallback.');
     return res.json({
       success: true,
-      result: "Mock API Key detected. Your twin is growing stronger! (Add GEMINI_API_KEY to .env to enable the real LLM)."
+      result: "Groq/Gemini key missing. Your twin is still learning locally! (Add GROQ_API_KEY to .env)."
     });
   }
 
   try {
     const memories = await getUserMemories(user_id);
     const memoryContext = memories.length > 0 
-      ? `\n\nSUPER INTELLIGENCE CONTEXT (Learned from user): \n${memories.map(m => "- " + m).join("\n")}`
+      ? `\n\nSUPER INTELLIGENCE CONTEXT: \n${memories.map(m => "- " + m).join("\n")}`
       : "";
     const dynamicSystemInstruction = SYSTEM_PROMPT + memoryContext;
 
-    console.log(`[AI Core] Generating response with ${memories.length} real memories injected.`);
+    console.log(`[AI Core] Generating Groq response with ${memories.length} memories.`);
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
       body: JSON.stringify({
-        system_instruction: { parts: { text: dynamicSystemInstruction } },
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 100
-        }
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: dynamicSystemInstruction },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 150
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('[AI Proxy] Gemini API Error:', errText);
-      return res.status(502).json({ error: 'Failed to generate AI response' });
+      console.error('[AI Proxy] Groq API Error:', errText);
+      return res.status(502).json({ error: 'Failed to generate AI response from Groq' });
     }
 
     const data = await response.json();
@@ -193,5 +210,6 @@ app.get('/api/learn/history/:user_id', (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[Focus Twin Backend] Secure AI Proxy listening on http://localhost:${PORT}`);
+  console.log(`[Focus Twin Backend] Secure AI Proxy ACTIVE on http://localhost:${PORT}`);
+  console.log(`[AI Core] Health check available at http://localhost:${PORT}/api/health`);
 });

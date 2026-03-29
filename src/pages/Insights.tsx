@@ -6,7 +6,7 @@ import { getAllSessions } from "@/lib/sessionManager";
 import { computePatterns, formatHour, DAY_NAMES, type PatternSummary } from "@/lib/patternEngine";
 import { loadTwinState } from "@/lib/twinEngine";
 import { getInsight } from "@/lib/twinAgent";
-import { fetchAIMemories } from "@/lib/ml";
+import { fetchAIMemories, runGlobalTraining } from "@/lib/ml";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
 import EvoTwin from "@/components/EvoTwin";
 
@@ -16,6 +16,7 @@ const Insights = () => {
   const [insight, setInsight] = useState<string>("");
   const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -125,9 +126,29 @@ const Insights = () => {
                 className="rounded-2xl bg-card/60 border border-primary/20 p-4 mb-5 shadow-[0_0_15px_rgba(0,242,254,0.1)] relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-                <div className="flex items-center gap-2 mb-4 relative z-10">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]" />
-                  <p className="text-[10px] font-mono text-primary tracking-widest uppercase font-bold">Neural Memory Matrix</p>
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]" />
+                    <p className="text-[10px] font-mono text-primary tracking-widest uppercase font-bold">Neural Memory Matrix</p>
+                  </div>
+                  <button
+                    disabled={syncing}
+                    onClick={async () => {
+                      setSyncing(true);
+                      const res = await runGlobalTraining();
+                      // Refresh memories after sync
+                      const updated = await fetchAIMemories();
+                      setMemories(updated);
+                      setSyncing(false);
+                      // Update main insight too
+                      const twin = loadTwinState();
+                      const msg = await getInsight({ patterns, twin });
+                      setInsight(msg);
+                    }}
+                    className="text-[9px] font-mono bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded-full transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {syncing ? "EVOLVING..." : "SYNC EVOLUTION"}
+                  </button>
                 </div>
                 
                 <p className="text-xs text-muted-foreground font-sans mb-4">
