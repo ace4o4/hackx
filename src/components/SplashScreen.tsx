@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+  
 const BOOT_LOGS = [
   "BIOS DATE 04/17/27 19:42:11 VER 2.01",
   "CPU: NEURAL_NEXUS Core(tm) i11-7900K @ 4.80GHz",
