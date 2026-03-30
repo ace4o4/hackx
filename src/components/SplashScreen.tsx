@@ -1,136 +1,114 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const BOOT_LOGS = [
+  "BIOS DATE 04/17/27 19:42:11 VER 2.01",
+  "CPU: NEURAL_NEXUS Core(tm) i11-7900K @ 4.80GHz",
+  "Memory Test: 4194304K OK",
+  "Initializing DARSOB 27// Subsystems...",
+  "Loading ZK-Sync Protocols... OK",
+  "Mounting Secure Vault... OK",
+  "Establishing Peer-to-Peer Relay...",
+  "Bypassing node security protocols... [ACCESS GRANTED]",
+  "Swarm Hub Initialized. Ready for uplink."
+];
+
 const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
-  const [phase, setPhase] = useState<"orb" | "text" | "exit">("orb");
+  const [logs, setLogs] = useState<string[]>([]);
+  const [phase, setPhase] = useState<"boot" | "exit">("boot");
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase("text"), 800);
-    const t2 = setTimeout(() => setPhase("exit"), 2200);
-    const t3 = setTimeout(onComplete, 2800);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < BOOT_LOGS.length) {
+        setLogs((prev) => [...prev, BOOT_LOGS[index]]);
+        index++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => setPhase("exit"), 800);
+      }
+    }, 150);
+
+    const finishTimeout = setTimeout(onComplete, 2800);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(finishTimeout);
+    };
   }, [onComplete]);
 
   return (
     <AnimatePresence>
-      {phase !== "exit" ? (
+      {phase !== "exit" && (
         <motion.div
           key="splash"
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-background"
+          exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute inset-0 z-[9999] bg-black text-primary font-mono overflow-hidden flex flex-col p-6"
         >
-          {/* Ambient glow */}
-          <div
-            className="absolute w-[300px] h-[300px] rounded-full opacity-30"
-            style={{
-              background: "radial-gradient(circle, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.15), transparent 70%)",
-              filter: "blur(60px)",
-            }}
-          />
+          {/* Glitch Overlay & Scanline */}
+          <div className="glitch-overlay opacity-30"></div>
+          <div className="cyber-scanline"></div>
 
-          {/* Orb */}
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="relative"
-          >
-            <motion.div
-              className="w-24 h-24 rounded-full relative"
-              style={{
-                background: "radial-gradient(ellipse 70% 60% at 35% 30%, rgba(60,65,90,0.5), rgba(20,22,35,0.95) 60%, rgba(8,10,20,1))",
-                boxShadow: "0 0 40px hsl(var(--primary) / 0.2), 0 10px 30px rgba(0,0,0,0.5)",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              {/* Eyes */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] flex gap-[14px]">
+          {/* Top terminal bracket */}
+          <div className="w-full border-t border-l border-r border-primary/40 h-4 mb-4 relative">
+            <div className="absolute -top-1 -left-1 w-2 h-2 bg-primary"></div>
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary"></div>
+          </div>
+
+          {/* Logs Output */}
+          <div className="flex-1 flex flex-col justify-end pb-8">
+            <div className="space-y-1">
+              {logs.map((log, i) => (
                 <motion.div
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  transition={{ delay: 0.3, duration: 0.3, ease: "backOut" }}
-                  className="w-[6px] h-[16px] rounded-[4px]"
-                  style={{
-                    background: "linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary) / 0.8))",
-                    boxShadow: "0 0 10px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.3)",
-                  }}
-                />
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-[10px] md:text-sm tracking-widest uppercase text-shadow-glow"
+                  style={{ textShadow: "0 0 5px rgba(57,255,20,0.5)" }}
+                >
+                  <span className="opacity-50 mr-2">&gt;</span>
+                  {log}
+                </motion.div>
+              ))}
+              {logs.length < BOOT_LOGS.length && (
                 <motion.div
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  transition={{ delay: 0.4, duration: 0.3, ease: "backOut" }}
-                  className="w-[6px] h-[16px] rounded-[4px]"
-                  style={{
-                    background: "linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary) / 0.8))",
-                    boxShadow: "0 0 10px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.3)",
-                  }}
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="w-2.5 h-4 bg-primary mt-1"
                 />
-              </div>
+              )}
+            </div>
+          </div>
 
-              {/* Glass highlight */}
-              <div
-                className="absolute rounded-full"
-                style={{
-                  width: "40%",
-                  height: "20%",
-                  top: "14%",
-                  left: "20%",
-                  background: "linear-gradient(180deg, rgba(255,255,255,0.07), transparent)",
-                  filter: "blur(3px)",
-                }}
-              />
-
-              {/* Orbiting particle */}
+          {/* Big Header Center (appears at end) */}
+          <AnimatePresence>
+            {logs.length === BOOT_LOGS.length && (
               <motion.div
-                className="absolute w-2 h-2 rounded-full"
-                style={{
-                  background: "hsl(var(--primary))",
-                  boxShadow: "0 0 8px hsl(var(--primary) / 0.6)",
-                  top: "50%",
-                  left: "50%",
-                }}
-                animate={{
-                  x: [40, -40, 40],
-                  y: [-30, 30, -30],
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </motion.div>
-          </motion.div>
+                initial={{ opacity: 0, scaleY: 0 }}
+                animate={{ opacity: 1, scaleY: 1 }}
+                className="absolute inset-0 flex items-center justify-center mix-blend-screen pointer-events-none"
+              >
+                <div className="border-t border-b border-primary/50 py-4 px-12 glass-surface clip-cyber bg-black">
+                  <h1 className="text-4xl md:text-6xl font-bold tracking-[0.2em] glitch text-primary" data-text="EVO_AEGIS">
+                    EVO_AEGIS
+                  </h1>
+                  <p className="text-center text-[10px] tracking-[0.5em] mt-2 opacity-80">SYS.ON // DARSOB_27</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: phase === "text" ? 1 : 0, y: phase === "text" ? 0 : 15 }}
-            transition={{ duration: 0.5 }}
-            className="mt-8 text-center"
-          >
-            <h1 className="text-xl font-mono font-bold tracking-tighter gradient-text-aurora">
-              EVO_AEGIS
-            </h1>
-            <p className="text-[10px] font-mono text-muted-foreground tracking-[0.3em] mt-2">
-              INITIALIZING SWARM
-            </p>
-          </motion.div>
-
-          {/* Loading dots */}
-          <div className="flex gap-1.5 mt-6">
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="w-1.5 h-1.5 rounded-full bg-primary/60"
-                animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
-                transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
-              />
-            ))}
+          {/* Bottom terminal bracket */}
+          <div className="w-full border-b border-l border-r border-primary/40 h-4 mt-4 relative">
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-primary"></div>
+            <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-primary"></div>
+            <div className="absolute -bottom-4 right-2 text-[8px] opacity-50">v2.01.294 // NEURAL_LINK</div>
           </div>
         </motion.div>
-      ) : null}
+      )}
     </AnimatePresence>
   );
 };
 
 export default SplashScreen;
+

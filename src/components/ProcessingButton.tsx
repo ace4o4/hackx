@@ -16,18 +16,18 @@ interface ProcessingButtonProps {
 
 const variantStyles = {
   primary: {
-    base: "bg-primary text-primary-foreground",
-    hover: "hover:brightness-110",
-    glow: "0 0 20px hsl(var(--primary) / 0.3), 0 4px 15px hsl(var(--primary) / 0.15)",
+    base: "bg-primary text-black border-2 border-primary clip-cyber-md",
+    hover: "hover:bg-black hover:text-primary",
+    glow: "0 0 15px hsl(var(--primary)/0.4)",
   },
   secondary: {
-    base: "bg-secondary text-secondary-foreground",
-    hover: "hover:brightness-110",
-    glow: "0 0 20px hsl(var(--secondary) / 0.3), 0 4px 15px hsl(var(--secondary) / 0.15)",
+    base: "bg-secondary/50 text-primary border border-primary/30 clip-cyber-md border-tech",
+    hover: "hover:bg-primary/20",
+    glow: "none",
   },
   ghost: {
-    base: "glass-surface text-foreground",
-    hover: "hover:brightness-110",
+    base: "bg-transparent text-primary/80 hover:text-primary border border-transparent",
+    hover: "hover:bg-primary/10 hover:border-primary/30",
     glow: "none",
   },
 };
@@ -75,32 +75,36 @@ const ProcessingButton = ({
   return (
     <motion.button
       whileHover={!disabled && !isProcessing ? { scale: 1.02 } : {}}
-      whileTap={!disabled && !isProcessing ? { scale: 0.97 } : {}}
+      whileTap={!disabled && !isProcessing ? { scale: 0.98 } : {}}
       onClick={handleClick}
       disabled={disabled || isProcessing}
       className={`
-        relative overflow-hidden rounded-xl px-6 py-3 font-mono text-sm tracking-wider
-        flex items-center justify-center gap-2.5 cursor-pointer
-        aegis-transition disabled:opacity-50 disabled:cursor-not-allowed
+        relative overflow-hidden px-6 py-3 font-mono text-sm tracking-[0.2em] font-bold uppercase
+        flex items-center justify-center gap-3 cursor-pointer
+        transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
         ${styles.base} ${styles.hover} ${className}
       `}
       style={{ boxShadow: !disabled ? styles.glow : "none" }}
     >
-      {/* Shimmer effect during processing */}
+      {/* Cyberpunk Scanline Effect during processing */}
       <AnimatePresence>
         {isProcessing && (
           <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: "200%" }}
+            initial={{ y: "-100%" }}
+            animate={{ y: "200%" }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 w-1/3"
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-x-0 h-4 z-0"
             style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+              background: "linear-gradient(180deg, transparent, rgba(57, 255, 20, 0.3), transparent)",
+              boxShadow: "0 0 10px rgba(57,255,20,0.5)"
             }}
           />
         )}
       </AnimatePresence>
+
+      <div className="absolute top-1 left-2 w-1.5 h-1.5 bg-current opacity-30"></div>
+      <div className="absolute bottom-1 right-2 w-1.5 h-1.5 bg-current opacity-30"></div>
 
       {/* Content with transitions */}
       <AnimatePresence mode="wait" initial={false}>
@@ -110,10 +114,10 @@ const ProcessingButton = ({
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 relative z-10"
           >
             <Check className="w-4 h-4" />
-            <span>DONE</span>
+            <span>[ EXECUTED ]</span>
           </motion.div>
         ) : isProcessing ? (
           <motion.div
@@ -121,10 +125,14 @@ const ProcessingButton = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 relative z-10"
           >
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>PROCESSING...</span>
+            <div className="flex gap-1">
+               <motion.div className="w-1.5 h-1.5 bg-current" animate={{ opacity: [1,0,1] }} transition={{duration:0.6, repeat: Infinity}} />
+               <motion.div className="w-1.5 h-1.5 bg-current" animate={{ opacity: [1,0,1] }} transition={{delay:0.2, duration:0.6, repeat: Infinity}} />
+               <motion.div className="w-1.5 h-1.5 bg-current" animate={{ opacity: [1,0,1] }} transition={{delay:0.4, duration:0.6, repeat: Infinity}} />
+            </div>
+            <span>SYS.AWAIT</span>
           </motion.div>
         ) : (
           <motion.div
@@ -132,7 +140,7 @@ const ProcessingButton = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 relative z-10"
           >
             {icon}
             {children}

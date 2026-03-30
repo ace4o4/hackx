@@ -12,98 +12,131 @@ const Gateway = () => {
   const handleNavigate = () => {
     playClick();
     playWhoosh();
-    navigate("/genesis");
+    navigate("/home");
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
-      <div className="absolute inset-0 bg-background aurora-bg" />
-      <div className="absolute inset-0" style={{
-        background: "radial-gradient(ellipse 70% 50% at 50% 45%, hsl(var(--primary) / 0.08) 0%, hsl(var(--secondary) / 0.04) 40%, transparent 70%)",
-      }} />
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-6 bg-background cyber-grid text-foreground overflow-hidden">
+      {/* Corner Crosshairs */}
+      <div className="absolute top-8 left-8 w-6 h-6 border-l-2 border-t-2 border-primary/50"></div>
+      <div className="absolute top-8 right-8 w-6 h-6 border-r-2 border-t-2 border-primary/50"></div>
+      <div className="absolute bottom-8 left-8 w-6 h-6 border-l-2 border-b-2 border-primary/50"></div>
+      <div className="absolute bottom-8 right-8 w-6 h-6 border-r-2 border-b-2 border-primary/50"></div>
 
-      {/* Doodle decorations (light mode only) */}
-      <div className="absolute inset-0 pointer-events-none doodle-decorations opacity-0 light:opacity-100">
-        <svg className="absolute top-10 left-10 w-16 h-16 text-muted-foreground/10" viewBox="0 0 60 60">
-          <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 3" />
-        </svg>
-        <svg className="absolute bottom-20 right-16 w-12 h-12 text-muted-foreground/10" viewBox="0 0 40 40">
-          <path d="M5 35 L20 5 L35 35 Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
-        </svg>
-        <svg className="absolute top-1/3 right-8 w-8 h-8 text-primary/15" viewBox="0 0 30 30">
-          <path d="M15 2 L18 12 L28 12 L20 18 L23 28 L15 22 L7 28 L10 18 L2 12 L12 12 Z" fill="currentColor" />
-        </svg>
+      {/* Decorative Target */}
+      <div className="absolute top-12 right-12 w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center">
+        <div className="w-1 h-1 bg-primary"></div>
+        <div className="absolute w-full h-px bg-primary/30"></div>
+        <div className="absolute h-full w-px bg-primary/30"></div>
       </div>
 
-      {/* Theme toggle */}
-      <div className="absolute top-5 right-5 z-50">
-        <DoodleThemeToggle />
-      </div>
-
-      {/* Hex data stream */}
-      <div className="absolute top-0 left-8 opacity-[0.03] font-mono text-[10px] leading-4 select-none pointer-events-none overflow-hidden h-full">
-        {[...Array(40)].map((_, i) => (
+      {/* Hex data stream - Matrix style */}
+      <div className="absolute top-0 left-4 opacity-[0.1] font-mono text-[10px] leading-3 select-none pointer-events-none overflow-hidden h-full text-primary">
+        {[...Array(50)].map((_, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.8, 0] }}
-            transition={{ duration: 3, delay: i * 0.15, repeat: Infinity }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, delay: i * 0.1, repeat: Infinity }}
           >
-            {Math.random().toString(16).slice(2, 18).toUpperCase()}
+            {Math.random().toString(16).slice(2, 10).toUpperCase()}
           </motion.div>
         ))}
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-lg">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
-        >
-          <EvoTwin size={240} level={1} mood="curious" interactive label="Evo-1X" sublabel="INITIALIZATION" />
-        </motion.div>
+      {/* Main Panel */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-lg bg-secondary/80 backdrop-blur-md clip-cyber pb-12 pt-16 px-8 border-tech"
+      >
+        {/* Top Decorative Bar */}
+        <div className="absolute top-0 left-0 w-full h-8 bg-black/40 flex items-center px-4 justify-between border-b border-primary/20">
+          <div className="flex gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary/80 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+          </div>
+          <span className="text-[10px] font-mono tracking-widest text-primary">SYS.INIT // 27</span>
+        </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          className="text-3xl sm:text-4xl font-mono font-bold tracking-tighter mb-4 mt-6"
-        >
-          <span className="gradient-text-aurora">EVO_AEGIS</span>
-          <br />
-          <span className="text-foreground">SWARM HYPER-INTELLIGENCE_</span>
-        </motion.h1>
+        {/* Diagonal stripes decoration */}
+        <div className="absolute top-12 left-8 w-32 h-2 cyber-lines opacity-50"></div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-          className="text-sm text-muted-foreground font-sans leading-relaxed mb-10 max-w-sm"
-        >
-          Train your personal AI twin through zero-knowledge micro-quests. Your data never leaves your phone.
-        </motion.p>
+        <div className="flex flex-col items-start text-left mt-8">
+          <motion.h1
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-5xl sm:text-6xl font-mono font-bold tracking-tighter mb-2 glitch"
+            data-text="EVO_AEGIS"
+          >
+            EVO_AEGIS
+          </motion.h1>
+          <motion.h2
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-2xl font-mono tracking-widest text-primary mb-6 flex items-center gap-4"
+          >
+            27//
+            <div className="h-px bg-primary/50 flex-grow"></div>
+          </motion.h2>
 
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-        >
-          <ProcessingButton variant="primary" onClick={handleNavigate}>
-            INITIALIZE VIA PRIVY
-          </ProcessingButton>
-        </motion.div>
+          <div className="flex w-full justify-between items-start mb-10">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.6 }}
+              className="text-xs text-muted-foreground font-mono leading-relaxed max-w-[200px]"
+            >
+              Train your personal AI twin through zero-knowledge micro-quests. Your data never leaves your phone.
+            </motion.p>
+            
+            {/* Pseudo Barcode */}
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+              className="flex items-end h-16 gap-0.5 opacity-80"
+            >
+              {[1,3,1,2,4,1,2,5,1,2,3,1,1,4].map((w, i) => (
+                <div key={i} className="bg-foreground" style={{ width: `${w}px`, height: i%3===0 ? '100%' : '80%' }}></div>
+              ))}
+            </motion.div>
+          </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-16 flex items-center gap-4"
-        >
-          <StatusBadge label="ZK-FL v0.9.1" variant="neutral" pulse={false} />
-          <StatusBadge label="NODES: 2,847" variant="active" />
-          <StatusBadge label="14ms" variant="success" pulse={false} />
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="w-full"
+          >
+            {/* The Processing Button wrapped in a cyberpunk container */}
+            <div className="w-full relative group">
+              <div className="absolute -inset-1 bg-primary/20 blur group-hover:bg-primary/40 transition duration-500"></div>
+              <ProcessingButton variant="primary" onClick={handleNavigate} className="w-full font-mono tracking-widest relative z-10 bg-black hover:bg-black/90 text-primary border border-primary">
+                INITIALIZE VIA PRIVY
+              </ProcessingButton>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="mt-8 flex items-center gap-3 w-full border-t border-primary/20 pt-4"
+          >
+            <StatusBadge label="ZK-FL v0.9.1" variant="neutral" pulse={false} />
+            <StatusBadge label="NODES: 2,847" variant="active" />
+          </motion.div>
+        </div>
+      </motion.div>
+      
+      {/* Lower Decorative Element */}
+      <div className="absolute bottom-12 right-12 text-right">
+        <p className="font-mono text-[8px] tracking-widest text-primary/60">SECURE LINK ESTABLISHED</p>
+        <div className="w-32 h-px bg-primary/30 mt-1 ml-auto relative">
+          <div className="absolute right-0 top-0 w-8 h-px bg-primary shadow-[0_0_8px_rgba(57,255,20,0.8)]"></div>
+        </div>
       </div>
     </div>
   );

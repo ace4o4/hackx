@@ -87,288 +87,161 @@ const FocusDashboard = () => {
   const xpCurrent = Math.round(progress * xpNeeded);
 
   return (
-    <div className="relative min-h-[100dvh] bg-background overflow-hidden">
-      {/* Background glow */}
-      <div className="fixed inset-0" style={{
-        background: "radial-gradient(ellipse 50% 40% at 50% 15%, hsl(var(--primary) / 0.07) 0%, transparent 70%)",
-      }} />
-
-      <div className="fixed top-5 right-5 z-50 flex items-center gap-2">
-        {walletAddress ? (
-          <div className="flex items-center gap-1.5 bg-card/60 border border-primary/20 rounded-full pl-2.5 pr-1 py-1">
-            <Wallet className="w-3 h-3 text-primary" />
-            <span className="text-[9px] font-mono text-foreground/80">{shortenAddress(walletAddress)}</span>
-            {walletBalance && <span className="text-[8px] font-mono text-muted-foreground mr-1">{walletBalance} APT</span>}
-            <button
-              onClick={async () => {
-                await disconnectWallet();
-                setWalletAddress("");
-                setWalletBalance("");
-              }}
-              className="w-5 h-5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors"
-              title="Disconnect Wallet"
-            >
-              <span className="text-[10px] font-bold">&times;</span>
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={async () => {
+    <div className="relative min-h-[100dvh] bg-background cyber-grid overflow-hidden text-foreground font-mono">
+      {/* Corner Overlays */}
+      <div className="absolute top-4 left-4 w-4 h-4 border-l border-t border-primary/50"></div>
+      <div className="absolute top-4 right-4 w-4 h-4 border-r border-t border-primary/50"></div>
+      
+      {/* Top Ledger Navbar */}
+      <div className="fixed top-0 left-0 w-full h-12 bg-black/60 backdrop-blur-md border-b border-primary/20 z-50 flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+          <span className="text-[10px] tracking-widest text-primary/80">SYS.LINK // ACTIVE</span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          {walletAddress ? (
+            <div className="flex items-center gap-2 bg-secondary/80 border border-primary/30 px-2 py-1 rounded-none border-tech">
+              <span className="text-[9px] text-primary">{shortenAddress(walletAddress)}</span>
+              {walletBalance && <span className="text-[8px] text-muted-foreground">| {walletBalance} APT</span>}
+              <button onClick={async () => { await disconnectWallet(); setWalletAddress(""); setWalletBalance(""); }} className="text-red-500 font-bold ml-1">X</button>
+            </div>
+          ) : (
+            <button onClick={async () => {
               try {
-                const { address } = await connectWallet();
-                setWalletAddress(address);
-                const bal = await getWalletBalance(address);
-                setWalletBalance(bal);
-              } catch (e: unknown) {
-                const error = e as Error;
-                alert(error.message || "Petra Wallet not found");
-              }
-            }}
-            className="flex items-center gap-1.5 bg-primary/10 border border-primary/30 text-primary rounded-full px-3 py-1.5 text-[9px] font-mono font-bold tracking-wider uppercase hover:bg-primary/20 transition-colors"
-          >
-            <Wallet className="w-3 h-3" /> Connect
-          </button>
-        )}
-        <DoodleThemeToggle />
+                const { address } = await connectWallet(); setWalletAddress(address); setWalletBalance(await getWalletBalance(address));
+              } catch (e: unknown) { alert((e as Error).message || "Wallet not found"); }
+            }} className="border-tech bg-secondary/50 hover:bg-primary/20 text-primary px-3 py-1 text-[9px] tracking-widest uppercase transition-all">
+              [ CONNECT_NODE ]
+            </button>
+          )}
+          <DoodleThemeToggle />
+        </div>
       </div>
 
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-8 pb-28">
+      <div className="relative z-10 max-w-lg mx-auto px-4 pt-20 pb-28">
 
-        {/* Header row */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-6"
-        >
-          <div>
-            <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">EvoAegis</p>
-            <h1 className="text-xl font-mono font-bold tracking-tighter gradient-text-aurora">Swarm Hub</h1>
-          </div>
-          <div className="flex gap-2">
-            <button
-              className="px-3 h-9 rounded-full bg-card/60 border border-primary/20 flex items-center gap-2 hover:bg-muted/40 transition-colors"
-            >
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-mono text-primary tracking-widest">NETWORK LIVE</span>
+        {/* Header HUD */}
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8 border-l-2 border-primary pl-4 relative">
+          <div className="absolute -left-[5px] top-0 w-2 h-2 bg-primary"></div>
+          <p className="text-[10px] text-primary tracking-widest uppercase mb-1">EVO_AEGIS // TERMINAL</p>
+          <h1 className="text-3xl font-bold tracking-tighter text-foreground uppercase glitch" data-text="SWARM_HUB">SWARM_HUB</h1>
+          <div className="mt-2 flex gap-2">
+            <button className="border border-primary/30 bg-primary/10 px-2 h-6 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-primary animate-pulse" />
+              <span className="text-[9px] text-primary tracking-widest">NETWORK LIVE</span>
             </button>
-            <button
-              onClick={handleInsights}
-              className="w-9 h-9 rounded-full bg-card/60 border border-border flex items-center justify-center hover:bg-muted/40 transition-colors"
-              aria-label="View insights"
-            >
-              <BarChart2 className="w-4 h-4 text-muted-foreground" />
+            <button onClick={handleInsights} className="border border-border bg-secondary/80 px-2 h-6 flex items-center hover:bg-primary/20 transition-all">
+              <span className="text-[9px] text-muted-foreground tracking-widest">DIAGNOSTICS</span>
             </button>
           </div>
         </motion.div>
 
-        {/* WALLET: Deploy Contract Banner */}
-        {walletAddress && !contractDeployed && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl bg-secondary/10 border border-secondary/30 p-4 mb-4 flex items-center gap-3"
-          >
-            <div className="flex-1">
-              <p className="text-[10px] font-mono font-bold text-foreground uppercase tracking-wider mb-0.5">Deploy Smart Contract</p>
-              <p className="text-[9px] font-mono text-muted-foreground">One-time setup for real on-chain ZK-Proofs</p>
+        {/* Twin + greeting (Cyber Frame) */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 relative">
+          <div className="glass-surface p-4 clip-cyber border-tech flex flex-col items-center">
+            <div className="absolute top-2 left-2 text-[8px] text-primary/50 tracking-widest">UNIT_{twinState.level}</div>
+            <div className="absolute bottom-2 right-2 text-[8px] text-primary/50 tracking-widest">ID:{twinState.name.toUpperCase()}</div>
+            
+            <EvoTwin size={160} level={twinState.level} mood={twinState.streakDays >= 3 ? "excited" : "curious"} interactive label={twinState.name} sublabel={`LVL ${twinState.level}`} />
+            
+            <div className="mt-4 w-full bg-black/40 border border-primary/20 p-3 text-center text-xs tracking-wider text-primary/90">
+              {loading ? "ESTABLISHING NEURAL LINK..." : greeting}
             </div>
-            <button
-              onClick={async () => {
-                try {
-                  setIsDeploying(true);
-                  const { signer } = await connectWallet();
-                  await deployContract(signer);
-                  setContractDeployed(true);
-                } catch (e: unknown) {
-                  const error = e as Error;
-                  alert("Deploy failed: " + (error.message || "Unknown error"));
-                } finally {
-                  setIsDeploying(false);
-                }
-              }}
-              disabled={isDeploying}
-              className="shrink-0 bg-secondary text-background px-4 py-2 rounded-xl text-[10px] font-mono font-bold uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {isDeploying ? "Deploying..." : "Deploy"}
-            </button>
-          </motion.div>
-        )}
-
-        {/* Contract Live Badge */}
-        {walletAddress && contractDeployed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-4 flex justify-center"
-          >
-            <a
-              href={getContractExplorerUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 text-[9px] font-mono text-green-500 hover:bg-green-500/20 transition-colors"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              Differential Privacy Sync Live <ExternalLink className="w-3 h-3" />
-            </a>
-          </motion.div>
-        )}
-
-        {/* Twin + greeting */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center mb-6"
-        >
-          <EvoTwin
-            size={180}
-            level={twinState.level}
-            mood={twinState.streakDays >= 3 ? "excited" : "curious"}
-            interactive
-            label={twinState.name}
-            sublabel={`LVL ${twinState.level}`}
-          />
-
-          {/* Greeting */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: loading ? 0 : 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-4 px-4 py-3 rounded-2xl bg-card/60 border border-border max-w-xs text-center"
-          >
-            <p className="text-sm font-sans text-foreground/90 leading-relaxed">{greeting}</p>
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* XP Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="rounded-2xl bg-card/60 border border-border p-4 mb-4"
-        >
+        <div className="mb-6 bg-secondary/40 border border-border p-3 clip-cyber relative">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">Twin Evolution</p>
-            <p className="text-[10px] font-mono text-muted-foreground">{xpCurrent} / {xpNeeded} XP</p>
+            <span className="text-[10px] text-muted-foreground tracking-widest">EVOLUTION_PROGRESS</span>
+            <span className="text-[10px] text-primary">{xpCurrent}/{xpNeeded}</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-muted/30 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)))" }}
-              initial={{ width: 0 }}
-              animate={{ width: `${progress * 100}%` }}
-              transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-            />
+          <div className="w-full h-1 bg-black overflow-hidden relative border border-primary/20">
+            <motion.div className="absolute top-0 left-0 h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${progress * 100}%` }} transition={{ duration: 1 }} />
           </div>
-        </motion.div>
+        </div>
+
+        {/* Quick stats */}
+        <div className="grid grid-cols-3 gap-2 mb-6">
+          <MiniStat label="UPTIME" value={`${todayMins}m`} />
+          <MiniStat label="STREAK" value={`${twinState.streakDays}d`} />
+          <MiniStat label="CYCLES" value={`${twinState.totalSessions}`} />
+        </div>
 
         {/* Daily challenge */}
         {challenge && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="rounded-2xl bg-card/60 border border-border p-4 mb-4"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <p className="text-[10px] font-mono text-amber-400 tracking-wider uppercase">Daily Challenge</p>
-              {challenge.completed && (
-                <span className="ml-auto text-[9px] font-mono text-green-400 tracking-wider">✓ DONE</span>
-              )}
+          <div className="mb-6 border-tech bg-secondary/30 p-4 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full blur-xl"></div>
+            <div className="flex justify-between items-start mb-2 relative z-10">
+              <div className="flex items-center gap-2">
+                <Zap className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[10px] text-primary tracking-widest">DIRECTIVE // DAILY</span>
+              </div>
+              {challenge.completed && <span className="text-[9px] bg-primary/20 text-primary px-1 border border-primary/30">✓ EXECUTED</span>}
             </div>
-            <p className="text-sm font-sans font-semibold text-foreground mb-1">{challenge.title}</p>
-            <p className="text-xs font-sans text-muted-foreground leading-relaxed">{challenge.description}</p>
-          </motion.div>
+            <p className="text-sm font-bold text-foreground relative z-10 uppercase">{challenge.title}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 relative z-10">{challenge.description}</p>
+          </div>
         )}
 
-        {/* Quick stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="grid grid-cols-3 gap-3 mb-6"
-        >
-          <MiniStat label="TODAY" value={`${todayMins}m`} />
-          <MiniStat label="STREAK" value={`${twinState.streakDays}d`} />
-          <MiniStat label="SESSIONS" value={`${twinState.totalSessions}`} />
-        </motion.div>
-
-        {/* Main CTA: Train ML Brain */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <motion.button
-            onClick={handleQuest}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full h-16 rounded-2xl font-mono text-base font-bold text-background tracking-wider shadow-lg flex items-center justify-center gap-3 relative overflow-hidden group"
-            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))" }}
-          >
-            <div className="absolute inset-0 w-full h-full bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-            <Cpu className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">BURST TRAINING</span>
-            <div className="flex items-center gap-1.5 opacity-70 relative z-10">
-              <Activity className="w-3 h-3 animate-pulse" />
-              <span className="text-[10px]">P2P ZK-SYNC</span>
+        {/* Contract & Ledger */}
+        <div className="space-y-4 mb-6">
+          {/* Main CTA */}
+          <button onClick={handleQuest} className="w-full h-14 bg-primary text-black font-bold tracking-widest border-2 border-primary hover:bg-black hover:text-primary transition-all flex items-center justify-between px-6 clip-cyber-md group">
+            <div className="flex items-center gap-3">
+              <Cpu className="w-5 h-5 group-hover:animate-spin" />
+              <span>INITIATE_BURST</span>
             </div>
-          </motion.button>
-        </motion.div>
+            <div className="text-[10px] opacity-70 flex items-center gap-1">
+              <Activity className="w-3 h-3 animate-pulse" /> P2P ZK-SYNC
+            </div>
+          </button>
 
-        {/* Network Activity LEDGER */}
-        {proofs.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-            className="mt-6 border border-border bg-card/40 rounded-2xl p-4 shadow-inner"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Network className="w-4 h-4 text-primary" />
-                <h3 className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">Network Ledger</h3>
+          {/* Wallet Actions */}
+          {walletAddress && !contractDeployed && (
+            <div className="bg-secondary/50 border border-primary/30 p-3 flex items-center gap-3">
+              <div className="flex-1">
+                <p className="text-[10px] font-bold text-primary tracking-wider">DEPLOY ZK_CONTRACT</p>
               </div>
-              <button 
-                onClick={() => { playClick(); navigate('/explorer'); }}
-                className="text-[9px] font-mono text-primary flex items-center gap-1 hover:underline p-1"
-              >
-                View on AegisScan &rarr;
+              <button disabled={isDeploying} onClick={async () => { try { setIsDeploying(true); const { signer } = await connectWallet(); await deployContract(signer); setContractDeployed(true); } catch(e) { alert("Failed"); } finally { setIsDeploying(false); } }} className="bg-black border border-primary text-primary px-3 py-1 text-[10px] hover:bg-primary hover:text-black transition-colors">
+                {isDeploying ? "DEPLOYING..." : "EXECUTE"}
               </button>
             </div>
-            
-            <div className="space-y-3">
-              {proofs.map((proof) => (
-                <div key={proof.id} className="p-3 bg-background/50 border border-primary/20 rounded-xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-8 h-full bg-primary/5 -skew-x-12 translate-x-4 group-hover:-translate-x-full transition-transform duration-700" />
-                  
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="text-[10px] text-primary font-mono tracking-tighter truncate w-32 border border-primary/30 bg-primary/10 px-1.5 py-0.5 rounded">
-                      {proof.tx_hash.slice(0, 8)}...{proof.tx_hash.slice(-6)}
-                    </p>
-                    <span className="text-[10px] font-mono text-success drop-shadow-[0_0_5px_rgba(74,222,128,0.3)]">+{proof.reward}</span>
+          )}
+          {walletAddress && contractDeployed && (
+            <a href={getContractExplorerUrl()} target="_blank" rel="noopener noreferrer" className="block text-center border border-primary/30 bg-primary/5 text-primary text-[9px] py-1 hover:bg-primary/10 transition-colors tracking-widest">
+              &gt; VERIFY DIFFERENTIAL PRIVACY SYNC [ON_CHAIN] &lt;
+            </a>
+          )}
+        </div>
+
+        {/* Network Ledger */}
+        {proofs.length > 0 && (
+          <div className="border border-border bg-black/40 p-4 clip-cyber-tl-br">
+            <div className="flex justify-between items-end border-b border-primary/20 pb-2 mb-3">
+              <span className="text-[10px] text-primary tracking-widest">NETWORK_LEDGER</span>
+              <button onClick={() => { playClick(); navigate('/explorer'); }} className="text-[9px] text-muted-foreground hover:text-primary transition-colors">VIEW_ALL &gt;</button>
+            </div>
+            <div className="space-y-2">
+              {proofs.map(p => (
+                <div key={p.id} className="flex justify-between items-center text-[10px]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary opacity-70">[{p.data_type.toUpperCase()}]</span>
+                    <span className="text-muted-foreground">{p.tx_hash.slice(0, 8)}</span>
                   </div>
-                  
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex items-center gap-1.5">
-                      {proof.data_type === "audio" ? <span className="text-[8px]">🔊</span> : <span className="text-[8px]">👁️</span>}
-                      <span className="text-[9px] font-mono text-muted-foreground uppercase">ZK-{proof.data_type}-PROOF</span>
-                    </div>
-                    <span className="text-[9px] font-mono text-muted-foreground/50">
-                      {new Date(proof.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
+                  <span className="text-primary font-bold">+{p.reward}
+                  </span>
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Global Admin Link */}
-        <div className="mt-8 pt-6 border-t border-white/5 opacity-30 group-hover:opacity-100 transition-opacity">
-          <Link to="/admin" className="flex items-center justify-center gap-2 text-[10px] font-mono text-muted-foreground hover:text-primary transition-colors">
-            <ShieldCheck className="w-3 h-3" /> [DECENTRALIZED_NODE_ADMIN_PORTAL]
+        <div className="mt-8 text-center opacity-30 hover:opacity-100 transition-opacity">
+          <Link to="/admin" className="text-[10px] text-primary tracking-widest flex items-center justify-center gap-1">
+            <ShieldCheck className="w-3 h-3" /> [ROOT_ACCESS_PORTAL]
           </Link>
         </div>
       </div>
@@ -377,9 +250,9 @@ const FocusDashboard = () => {
 };
 
 const MiniStat = ({ label, value }: { label: string; value: string }) => (
-  <div className="rounded-xl bg-card/60 border border-border p-3 text-center">
-    <p className="text-[9px] font-mono text-muted-foreground tracking-widest mb-1">{label}</p>
-    <p className="text-lg font-mono font-bold gradient-text-aurora">{value}</p>
+  <div className="border border-border bg-secondary/30 p-2 text-center clip-cyber-md flex flex-col items-center justify-center hover:bg-primary/10 transition-colors">
+    <p className="text-[8px] text-primary/70 tracking-widest mb-1">{label}</p>
+    <p className="text-sm text-foreground font-bold">{value}</p>
   </div>
 );
 
