@@ -18,18 +18,18 @@ interface ProcessingButtonProps {
 
 const variantStyles = {
   primary: {
-    base: "bg-primary text-black border-2 border-primary clip-cyber-md",
-    hover: "hover:bg-black hover:text-primary",
-    glow: "0 0 15px hsl(var(--primary)/0.4)",
+    base: "bg-primary/10 text-primary border-2 border-primary clip-scifi-button holo-border",
+    hover: "hover:bg-primary/20 hover:text-white",
+    glow: "0 0 20px hsl(var(--primary)/0.5)",
   },
   secondary: {
-    base: "bg-secondary/50 text-primary border border-primary/30 clip-cyber-md border-tech",
+    base: "bg-secondary/80 text-primary border border-primary/50 clip-scifi-button border-tech",
     hover: "hover:bg-primary/20",
     glow: "none",
   },
   ghost: {
-    base: "bg-transparent text-primary/80 hover:text-primary border border-transparent",
-    hover: "hover:bg-primary/10 hover:border-primary/30",
+    base: "bg-transparent text-primary/80 hover:text-primary border border-transparent clip-scifi-button",
+    hover: "hover:bg-primary/10 hover:border-primary/50",
     glow: "none",
   },
 };
@@ -76,15 +76,15 @@ const ProcessingButton = ({
 
   return (
     <motion.button
-      whileHover={!disabled && !isProcessing ? { scale: 1.02 } : {}}
-      whileTap={!disabled && !isProcessing ? { scale: 0.98 } : {}}
+      whileHover={!disabled && !isProcessing ? { scale: 1.05 } : {}}
+      whileTap={!disabled && !isProcessing ? { scale: 0.90 } : {}}
       onClick={handleClick}
       disabled={disabled || isProcessing}
       className={`
         relative overflow-hidden px-6 py-3 font-mono text-sm tracking-[0.2em] font-bold uppercase
         flex items-center justify-center gap-3 cursor-pointer
         transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
-        ${styles.base} ${styles.hover} ${className}
+        ${styles.base} ${styles.hover} hover:action-burst ${className}
       `}
       style={{ boxShadow: !disabled ? styles.glow : "none" }}
     >
@@ -98,8 +98,8 @@ const ProcessingButton = ({
             transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
             className="absolute inset-x-0 h-4 z-0"
             style={{
-              background: "linear-gradient(180deg, transparent, rgba(57, 255, 20, 0.3), transparent)",
-              boxShadow: "0 0 10px rgba(57,255,20,0.5)"
+              background: "linear-gradient(180deg, transparent, rgba(0, 242, 254, 0.4), transparent)",
+              boxShadow: "0 0 15px rgba(0,242,254,0.6)"
             }}
           />
         )}

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import EvoTwin from "@/components/EvoTwin";
+import TargetCrosshair from "@/components/TargetCrosshair";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
 import ProcessingButton from "@/components/ProcessingButton";
 import StatusBadge from "@/components/StatusBadge";
@@ -16,7 +17,7 @@ const Gateway = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-6 bg-background cyber-grid text-foreground overflow-hidden">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-6 bg-background cyber-grid bg-manga-dots text-foreground overflow-hidden">
       {/* Corner Crosshairs */}
       <div className="absolute top-8 left-8 w-6 h-6 border-l-2 border-t-2 border-primary/50"></div>
       <div className="absolute top-8 right-8 w-6 h-6 border-r-2 border-t-2 border-primary/50"></div>
@@ -24,10 +25,8 @@ const Gateway = () => {
       <div className="absolute bottom-8 right-8 w-6 h-6 border-r-2 border-b-2 border-primary/50"></div>
 
       {/* Decorative Target */}
-      <div className="absolute top-12 right-12 w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center">
-        <div className="w-1 h-1 bg-primary"></div>
-        <div className="absolute w-full h-px bg-primary/30"></div>
-        <div className="absolute h-full w-px bg-primary/30"></div>
+      <div className="absolute top-12 right-12 opacity-80">
+        <TargetCrosshair size={64} color="hsl(var(--primary))" spinning={true} />
       </div>
 
       {/* Hex data stream - Matrix style */}
@@ -49,7 +48,7 @@ const Gateway = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-lg bg-secondary/80 backdrop-blur-md clip-cyber pb-12 pt-16 px-8 border-tech"
+        className="relative z-10 w-full max-w-lg bg-black/80 backdrop-blur-md clip-scifi-panel pb-12 pt-16 px-8 holo-border"
       >
         {/* Top Decorative Bar */}
         <div className="absolute top-0 left-0 w-full h-8 bg-black/40 flex items-center px-4 justify-between border-b border-primary/20">
@@ -64,12 +63,17 @@ const Gateway = () => {
         <div className="absolute top-12 left-8 w-32 h-2 cyber-lines opacity-50"></div>
 
         <div className="flex flex-col items-start text-left mt-8">
+          <div className="w-full flex justify-center mb-8">
+            <EvoTwin size={240} mood="thinking" interactive={true} />
+          </div>
+
           <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-5xl sm:text-6xl font-mono font-bold tracking-tighter mb-2 glitch"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.3 }}
+            className="text-5xl sm:text-6xl font-mono font-black tracking-tighter mb-2 glitch action-burst text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-success"
             data-text="EVO_AEGIS"
+            style={{ WebkitTextStroke: "2px black" }}
           >
             EVO_AEGIS
           </motion.h1>

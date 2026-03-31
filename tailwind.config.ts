@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: ['"Geist Mono"', 'monospace'],
-        sans: ['"Space Grotesk"', 'sans-serif'],
+        mono: ['"Orbitron"', 'monospace'],
+        sans: ['"Rajdhani"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

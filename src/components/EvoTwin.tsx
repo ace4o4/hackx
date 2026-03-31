@@ -128,13 +128,23 @@ const EvoTwin = ({
 
   const getCoreColor = () => {
     switch (currentMood) {
-      case "excited": return "hsl(var(--primary))";
-      case "happy": return "hsl(var(--primary))";
+      case "excited": return "hsl(var(--destructive))";
+      case "happy": return "hsl(var(--success))";
       case "sleepy": return "hsl(var(--muted-foreground))";
-      case "thinking": return "#00F2FE";
+      case "thinking": return "hsl(var(--primary))";
       case "curious": return "#FFB432";
       case "surprised": return "#FF0055";
       default: return "hsl(var(--primary))";
+    }
+  };
+
+  const getImageForMood = (m: MoodType) => {
+    switch (m) {
+      case 'surprised': case 'excited': return 'excited';
+      case 'happy': return 'happy';
+      case 'sleepy': return 'sleepy';
+      case 'curious': case 'thinking': return 'thinking';
+      default: return 'idle';
     }
   };
 
@@ -187,35 +197,56 @@ const EvoTwin = ({
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         />
 
-        {/* Core Geometry */}
+        {/* Realistic Avatar Core */}
         <motion.div
-          className="absolute bg-background border border-primary flex items-center justify-center overflow-hidden"
+          className="absolute bg-black flex items-center justify-center overflow-hidden clip-hex border-2 border-primary/50"
           style={{
-            width: coreSize, height: coreSize,
+            width: coreSize * 1.4, height: coreSize * 1.4,
             top: "50%", left: "50%", x: "-50%", y: "-50%",
-            transform: "rotate(45deg)",
-            boxShadow: `0 0 ${15 * scale}px ${getCoreColor()}60, inset 0 0 ${20 * scale}px ${getCoreColor()}20`,
+            boxShadow: `0 0 ${20 * scale}px ${getCoreColor()}60, inset 0 0 ${30 * scale}px ${getCoreColor()}40`,
           }}
           animate={{
-            scale: currentMood === "excited" ? [1, 1.1, 1] : 1,
-            rotate: currentMood === "thinking" ? [45, 135, 225, 315] : 45
+            scale: currentMood === "excited" ? [1, 1.05, 1] : 1,
           }}
-          transition={{ duration: currentMood === "thinking" ? 8 : 0.5, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: "linear" }}
         >
-          {/* Inner Matrix Scan */}
-          <motion.div 
-             className="absolute inset-0 bg-primary/20"
-             animate={{ y: ["-100%", "100%"] }}
-             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          {/* The Realistic Image */}
+          <motion.img 
+            key={currentMood}
+            src={`/anime_twin_${getImageForMood(currentMood)}.png`} 
+            alt={`Evo Twin ${currentMood}`} 
+            className="w-full h-full object-cover opacity-90 mix-blend-screen action-burst"
+            style={{ filter: `drop-shadow(0 0 10px ${getCoreColor()})` }}
+            initial={{ filter: "brightness(2) contrast(1.5)" }}
+            animate={{ 
+              opacity: currentMood === "sleepy" ? 0.7 : 1,
+              filter: `brightness(1) contrast(1)`
+            }}
+            transition={{ duration: 0.2 }}
           />
 
-          {/* Telemetry output (counter-rotated to stay upright) */}
-          <div style={{ transform: "rotate(-45deg)" }} className="z-10 flex flex-col items-center">
-             <span className="text-[10px] font-mono font-bold text-primary glitch" data-text={telemetry} style={{ color: getCoreColor() }}> {/* Dynamic color based on mood */}
+          {/* Glitch/Hologram Overlay depending on mood */}
+          {currentMood === "excited" && (
+             <div className="absolute inset-0 bg-primary/20 mix-blend-overlay animate-pulse" />
+          )}
+          {currentMood === "thinking" && (
+             <div className="absolute inset-0 bg-blue-500/20 mix-blend-overlay cyber-lines" />
+          )}
+
+          {/* Inner Matrix Scan */}
+          <motion.div 
+             className="absolute inset-0 bg-primary/10"
+             animate={{ y: ["-100%", "100%"] }}
+             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          />
+
+          {/* Telemetry overlay */}
+          <div className="absolute bottom-2 inset-x-0 z-10 flex flex-col items-center">
+             <span className="text-[10px] font-mono font-black text-white bg-black/50 px-2 rounded clip-scifi-tab" style={{ color: getCoreColor(), textShadow: `0 0 5px ${getCoreColor()}` }}>
                {telemetry}
              </span>
-             {currentMood === "curious" && <span className="text-[8px] text-primary mt-1 animate-pulse">Scanning...</span>}
-             {currentMood === "excited" && <span className="text-[8px] text-primary mt-1 font-bold">OVERRIDE</span>}
+             {currentMood === "curious" && <span className="text-[8px] text-primary mt-1 animate-pulse bg-black/40 px-1 rounded">SCANNING</span>}
+             {currentMood === "excited" && <span className="text-[8px] text-red-500 mt-1 font-bold bg-black/40 px-1 rounded">OVERRIDE</span>}
           </div>
         </motion.div>
 

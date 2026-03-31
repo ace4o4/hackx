@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Zap, BarChart2, Cpu, Activity, Network, Wallet, ExternalLink, ShieldCheck } from "lucide-react";
 import EvoTwin from "@/components/EvoTwin";
 import DoodleThemeToggle from "@/components/DoodleThemeToggle";
+import ScanningBar from "@/components/ScanningBar";
 import { playClick, playWhoosh } from "@/lib/sounds";
 import { getTodayFocusMinutes, getRecentSessions } from "@/lib/sessionManager";
 import { computePatterns } from "@/lib/patternEngine";
@@ -87,7 +88,7 @@ const FocusDashboard = () => {
   const xpCurrent = Math.round(progress * xpNeeded);
 
   return (
-    <div className="relative min-h-[100dvh] bg-background cyber-grid overflow-hidden text-foreground font-mono">
+    <div className="relative min-h-[100dvh] bg-background cyber-grid-dense bg-manga-dots overflow-hidden text-foreground font-mono">
       {/* Corner Overlays */}
       <div className="absolute top-4 left-4 w-4 h-4 border-l border-t border-primary/50"></div>
       <div className="absolute top-4 right-4 w-4 h-4 border-r border-t border-primary/50"></div>
@@ -139,9 +140,9 @@ const FocusDashboard = () => {
 
         {/* Twin + greeting (Cyber Frame) */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 relative">
-          <div className="glass-surface p-4 clip-cyber border-tech flex flex-col items-center">
-            <div className="absolute top-2 left-2 text-[8px] text-primary/50 tracking-widest">UNIT_{twinState.level}</div>
-            <div className="absolute bottom-2 right-2 text-[8px] text-primary/50 tracking-widest">ID:{twinState.name.toUpperCase()}</div>
+          <div className="bg-black/60 holo-border p-4 clip-scifi-panel flex flex-col items-center">
+            <div className="absolute top-4 left-4 text-[8px] text-primary/50 tracking-widest">UNIT_{twinState.level}</div>
+            <div className="absolute bottom-4 right-4 text-[8px] text-primary/50 tracking-widest">ID:{twinState.name.toUpperCase()}</div>
             
             <EvoTwin size={160} level={twinState.level} mood={twinState.streakDays >= 3 ? "excited" : "curious"} interactive label={twinState.name} sublabel={`LVL ${twinState.level}`} />
             
@@ -152,14 +153,8 @@ const FocusDashboard = () => {
         </motion.div>
 
         {/* XP Bar */}
-        <div className="mb-6 bg-secondary/40 border border-border p-3 clip-cyber relative">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] text-muted-foreground tracking-widest">EVOLUTION_PROGRESS</span>
-            <span className="text-[10px] text-primary">{xpCurrent}/{xpNeeded}</span>
-          </div>
-          <div className="w-full h-1 bg-black overflow-hidden relative border border-primary/20">
-            <motion.div className="absolute top-0 left-0 h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${progress * 100}%` }} transition={{ duration: 1 }} />
-          </div>
+        <div className="mb-6 bg-black/40 holo-border p-3 clip-scifi-tab relative">
+          <ScanningBar progress={progress * 100} label={`EVOLUTION_PROGRESS`} color="hsl(var(--primary))" height={16} />
         </div>
 
         {/* Quick stats */}
@@ -171,7 +166,7 @@ const FocusDashboard = () => {
 
         {/* Daily challenge */}
         {challenge && (
-          <div className="mb-6 border-tech bg-secondary/30 p-4 relative overflow-hidden group">
+          <div className="mb-6 holo-border bg-black/60 clip-scifi-panel p-4 relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full blur-xl"></div>
             <div className="flex justify-between items-start mb-2 relative z-10">
               <div className="flex items-center gap-2">
@@ -250,9 +245,9 @@ const FocusDashboard = () => {
 };
 
 const MiniStat = ({ label, value }: { label: string; value: string }) => (
-  <div className="border border-border bg-secondary/30 p-2 text-center clip-cyber-md flex flex-col items-center justify-center hover:bg-primary/10 transition-colors">
+  <div className="bg-black/40 holo-border p-2 text-center clip-scifi-button flex flex-col items-center justify-center hover:bg-primary/20 transition-colors">
     <p className="text-[8px] text-primary/70 tracking-widest mb-1">{label}</p>
-    <p className="text-sm text-foreground font-bold">{value}</p>
+    <p className="text-sm text-primary font-bold">{value}</p>
   </div>
 );
 

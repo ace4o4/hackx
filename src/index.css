@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 @layer base {
   :root,
   .dark {
-    /* Cyberpunk DARSOB 27// - Industrial, sci-fi, sharp */
+    /* Anime x Cyberpunk Layout - Hyper vibrant, high contrast */
     --background: 0 0% 6%;
     --foreground: 0 0% 90%;
 
@@ -17,7 +17,7 @@
     --popover: 0 0% 9%;
     --popover-foreground: 0 0% 90%;
 
-    --primary: 110 100% 54%; /* Neon Green #39FF14 */
+    --primary: 189 100% 50%; /* Electric Cyan #00F2FE */
     --primary-foreground: 0 0% 4%;
 
     --secondary: 0 0% 12%; /* Dark Metallic */
@@ -26,13 +26,13 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 0 0% 90%; /* Silver accents */
-    --accent-foreground: 0 0% 4%;
+    --accent: 330 100% 50%; /* Neon Magenta ! */
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 100% 50%; /* Red alert */
+    --destructive: 330 100% 50%; /* Magenta/Red Alert */
     --destructive-foreground: 0 0% 98%;
 
-    --success: 110 100% 54%;
+    --success: 53 100% 50%; /* Bright Anime Yellow */
     --success-foreground: 0 0% 4%;
 
     --border: 0 0% 20%;
@@ -43,12 +43,12 @@
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 110 100% 54%;
+    --sidebar-primary: 189 100% 50%;
     --sidebar-primary-foreground: 0 0% 4%;
     --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 110 100% 54%;
+    --sidebar-ring: 189 100% 50%;
   }
 
   .light {
@@ -185,9 +185,17 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(57, 255, 20, 0.03) 2px,
-      rgba(57, 255, 20, 0.03) 4px
+      rgba(0, 242, 254, 0.03) 2px,
+      rgba(0, 242, 254, 0.03) 4px
     );
+  }
+
+  /* Structural UI Grids */
+  .cyber-grid-dense {
+    background-image: 
+      linear-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 242, 254, 0.05) 1px, transparent 1px);
+    background-size: 10px 10px;
   }
 
   /* Cutouts */
@@ -201,6 +209,30 @@
 
   .clip-cyber-tl-br {
     clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+  }
+
+  /* Advanced Sci-Fi Shapes */
+  .clip-hex {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  .clip-scifi-panel {
+    clip-path: polygon(
+      0 20px, 
+      20px 0, 
+      calc(100% - 40px) 0, 
+      calc(100% - 20px) 20px, 
+      100% 20px, 
+      100% calc(100% - 20px), 
+      calc(100% - 20px) 100%, 
+      40px 100%, 
+      20px calc(100% - 20px), 
+      0 calc(100% - 20px)
+    );
+  }
+
+  .clip-scifi-button {
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
   }
 
   /* Glitch Text Effect */
@@ -231,11 +263,16 @@
 
   /* Vibrant glows */
   .glow-neon {
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3), inset 0 0 10px rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.1);
   }
 
   .text-glow {
-    text-shadow: 0 0 8px rgba(57, 255, 20, 0.6), 0 0 20px rgba(57, 255, 20, 0.2);
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6), 0 0 20px rgba(0, 242, 254, 0.2);
+  }
+  
+  .holo-border {
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2), inset 0 0 10px rgba(0, 242, 254, 0.1);
   }
 
   .border-tech {
@@ -261,8 +298,8 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: rgba(57, 255, 20, 0.5);
-    box-shadow: 0 0 10px rgba(57, 255, 20, 0.8), 0 0 20px rgba(57, 255, 20, 0.4);
+    background: rgba(0, 242, 254, 0.5);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4);
     pointer-events: none;
     z-index: 50;
     animation: scanline 4s linear infinite;
@@ -364,4 +401,38 @@
 /* Serenity snappy micro-interaction */
 .serenity-transition {
   transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ========================================= */
+/* ANIME MANGA EFFECTS & OVERLAYS */
+/* ========================================= */
+
+.bg-manga-dots {
+  background-image: radial-gradient(hsl(var(--muted-foreground)/0.3) 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 0 0;
+}
+
+@keyframes actionBurst {
+  0% { transform: scale(0.95); filter: brightness(1.5) contrast(1.2); }
+  50% { transform: scale(1.05); filter: brightness(1.2) contrast(1.1); }
+  100% { transform: scale(1); filter: brightness(1) contrast(1); }
+}
+
+.action-burst {
+  animation: actionBurst 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ========================================= */
+/* HUD & CYBERPUNK BACKGROUNDS */
+/* ========================================= */
+
+.bg-circuit-board {
+  background-color: hsl(var(--background));
+  background-image: 
+    linear-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 254, 0.05) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%2300F2FE' stroke-width='1' fill='none' stroke-opacity='0.15'%3E%3Cpath d='M20 20h20l15 15v30M80 20v20l-15 15h-30M20 100h20l15 -15v-30M100 100v-20l-15 -15h-30'/%3E%3Ccircle cx='55' cy='65' r='2' fill='%2300F2FE' fill-opacity='0.5'/%3E%3Ccircle cx='35' cy='35' r='3' fill='none' stroke='%2300F2FE' stroke-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 40px 40px, 40px 40px, 120px 120px;
+  background-position: 0 0, 0 0, center center;
 }
