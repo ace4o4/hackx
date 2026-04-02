@@ -3,7 +3,7 @@
 > *"An AI twin that lives on your phone, learns how you focus, and coaches you to get better — without your data ever leaving your device."*
 
 
-🌐 **Live Demo:** [cybersoulz.tech](https://cybersoulz.tech)
+🌐 **Live Demo:** [cybersoulz.tech](https://cybersoulz.tech
 ---
 
 ## What Is This
