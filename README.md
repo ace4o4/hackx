@@ -6,7 +6,6 @@
 🌐 **Live Demo:** [cybersoulz.tech](https://cybersoulz.tech)
 
 
-
 ---
 
 ## What Is This?
