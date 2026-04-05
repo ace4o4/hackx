@@ -16,7 +16,6 @@ Focus Twin is a **mobile-first Progressive Web App** that gives you a personal A
 Everything runs on-device. No cloud. No tracking. No account required.
 
 
-
 ---
 
 ## Why This Exists
