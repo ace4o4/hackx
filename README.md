@@ -15,7 +15,6 @@ Everything runs on-device. No cloud. No tracking. No account required.
 
 
 
-
 ## Why This Exists
 
 | The Problem | Existing Solutions | What's Missing |
