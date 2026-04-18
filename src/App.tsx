@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SplashScreen from "@/components/SplashScreen";
 import Gateway from "./pages/Gateway.tsx";
+import UnderMaintenance from "./pages/UnderMaintenance.tsx";
 import Dashboard from "./pages/DashboardRouter.tsx";
 import FocusDashboard from "./pages/FocusDashboard.tsx";
 import FocusSession from "./pages/FocusSession.tsx";
@@ -29,7 +30,7 @@ const App = () => {
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
         <HashRouter>
           <Routes>
-            <Route path="/" element={<Gateway />} />
+            <Route path="/" element={<UnderMaintenance />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/home" element={<FocusDashboard />} />
