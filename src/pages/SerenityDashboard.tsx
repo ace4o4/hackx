@@ -7,7 +7,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-full min-h-[100dvh] bg-[#F8F9FA] font-sans selection:bg-[#00F2FE]/30 overflow-hidden flex items-center justify-center">
+    <div className="relative h-full min-h-[100dvh] bg-[#F8F9FA] font-sans selection:bg-[#00F2FE]/30 overflow-hidden">
       
       {/* 
         =======================================================================
@@ -48,7 +48,7 @@ export default function Dashboard() {
         THE ORGANIC TECH-SCULPTURE
         =======================================================================
       */}
-      <main className="relative w-full h-full max-w-[412px] mx-auto px-4 flex flex-col items-center justify-center">
+      <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-[100dvh]">
 
         {/* 
           TOP LEFT SATELLITE: Swarm Sync

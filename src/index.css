@@ -104,58 +104,30 @@
   body {
     @apply text-foreground antialiased;
     font-family: 'Space Grotesk', sans-serif;
-    /* Desktop backdrop for the mobile frame */
-    background-color: #f4f4f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #09090b;
+    min-width: 320px;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  .dark body {
-    background-color: #09090b;
+  .light body {
+    background-color: #f4f4f5;
   }
 
-  /* The Android Device Frame */
   #root {
     @apply bg-background;
     width: 100%;
-    margin: 0 auto;
     position: relative;
     overflow-x: hidden;
-    overflow-y: auto;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    min-height: 100dvh;
   }
 
-  @media (min-width: 600px) {
-    #root {
-      width: 412px;
-      height: 850px;
-      max-height: 90vh;
-      border-radius: 36px;
-      /* Android hardware bezels */
-      border: 8px solid #000;
-      box-shadow: 
-        0 0 0 2px #3f3f46,
-        0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-    
-    .light #root {
-      box-shadow: 
-        0 0 0 2px #d4d4d8,
-        0 25px 50px -12px rgba(0, 0, 0, 0.15);
-    }
+  .min-h-screen {
+    min-height: 100vh;
+  }
 
-    /* Force full-screen elements to respect the phone container, not the browser window */
-    .min-h-screen {
-      min-height: 100% !important;
-    }
-    .h-screen {
-      height: 100% !important;
-    }
+  .h-screen {
+    height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {

@@ -187,10 +187,10 @@ const DashboardDark = () => {
         THE ORGANIC TECH-SCULPTURE (Dark Theme)
         =======================================================================
       */}
-      <main className="w-full h-full max-w-[412px] mx-auto flex flex-col items-center">
+      <main className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center lg:items-stretch px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* First Screen (Hero Section) */}
-        <div className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center shrink-0 px-4">
+        <div className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center shrink-0 px-4 sm:px-6 lg:px-8">
           {/* SATELLITE BLOCKS... */}
         <motion.div 
           className="absolute top-[12%] left-0 w-[75%] bg-black/80 holo-border backdrop-blur-[40px] border border-primary/30 p-5 clip-scifi-panel shadow-[0_20px_40px_-10px_rgba(0,242,254,0.3)] z-20 flex items-center justify-between"
