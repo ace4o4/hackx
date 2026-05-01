@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#050505" />
+  <circle cx="980" cy="120" r="220" fill="#00F2FE" fill-opacity="0.10" />
+  <circle cx="220" cy="520" r="260" fill="#FF00FF" fill-opacity="0.08" />
+  <rect x="72" y="72" width="1056" height="486" rx="36" stroke="#00F2FE" stroke-opacity="0.25" stroke-width="2" />
+  <circle cx="182" cy="180" r="54" stroke="#00F2FE" stroke-width="4" />
+  <circle cx="182" cy="180" r="28" fill="#00F2FE" fill-opacity="0.18" />
+  <path d="M150 180H214" stroke="#E5FEFF" stroke-width="8" stroke-linecap="round" />
+  <path d="M182 148V212" stroke="#E5FEFF" stroke-width="8" stroke-linecap="round" />
+  <text x="270" y="205" fill="#E5FEFF" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800">Focus Twin</text>
+  <text x="270" y="268" fill="#00F2FE" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="600">Private AI productivity companion</text>
+  <text x="270" y="332" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="24">Learns focus patterns, coaches better habits, keeps data on-device.</text>
+</svg>

@@ -30,7 +30,8 @@ const App = () => {
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
         <HashRouter>
           <Routes>
-            <Route path="/" element={<UnderMaintenance />} />
+            <Route path="/" element={<Gateway />} />
+            <Route path="/maintenance" element={<UnderMaintenance />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/home" element={<FocusDashboard />} />

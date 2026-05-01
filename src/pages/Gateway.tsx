@@ -7,6 +7,14 @@ import StatusBadge from "@/components/StatusBadge";
 import { useNavigate } from "react-router-dom";
 import { playClick, playWhoosh } from "@/lib/sounds";
 
+const LogoMark = () => (
+  <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-black/70 shadow-[0_0_18px_rgba(0,242,254,0.18)]">
+    <div className="absolute inset-2 rounded-full border border-primary/25" />
+    <div className="absolute inset-[10px] rounded-full bg-primary/10 blur-[1px]" />
+    <span className="relative font-mono text-[13px] font-black tracking-[0.2em] text-primary">FT</span>
+  </div>
+);
+
 const Gateway = () => {
   const navigate = useNavigate();
 
@@ -50,6 +58,14 @@ const Gateway = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-10 w-full max-w-lg bg-black/80 backdrop-blur-md clip-scifi-panel pb-12 pt-16 px-8 holo-border"
       >
+        <div className="absolute -top-7 left-6 flex items-center gap-3 rounded-full border border-primary/20 bg-black/85 px-3 py-2 backdrop-blur-md">
+          <LogoMark />
+          <div className="text-left">
+            <p className="text-[10px] font-mono tracking-[0.35em] text-primary/70">FOCUS TWIN</p>
+            <p className="text-[8px] font-mono tracking-[0.25em] text-muted-foreground">PRIVATE AI COMPANION</p>
+          </div>
+        </div>
+
         {/* Top Decorative Bar */}
         <div className="absolute top-0 left-0 w-full h-8 bg-black/40 flex items-center px-4 justify-between border-b border-primary/20">
           <div className="flex gap-2">
